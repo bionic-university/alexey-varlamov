@@ -47,7 +47,7 @@ class Parser
                 $header = array_values($row);
             } elseif (!$this->header) {
                 $this->values[] = $row;
-            } elseif ($indx> 0 && !empty($header)) {
+            } elseif ($indx > 0 && !empty($header)) {
                 $this->values[] = array_combine($header, $row);
             }
         }
