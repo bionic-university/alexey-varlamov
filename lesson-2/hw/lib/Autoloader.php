@@ -1,0 +1,38 @@
+<?php
+class Autoloader
+{
+    private static $instance;
+
+    /**
+     * @return Autoloader
+     */
+    private static function instance()
+    {
+        if (empty(self::$instance)) {
+            self::$instance = new Autoloader();
+        }
+
+        return self::$instance;
+    }
+
+    public static function init()
+    {
+        spl_autoload_register(array(self::instance(), 'autoload'));
+    }
+
+    private function autoload($class)
+    {
+        $className = ltrim($class, '\\');
+        $fileName  = '';
+        $namespace = '';
+
+        if ($lastNsPos = strripos($className, '\\')) {
+            $namespace = substr($className, 0, $lastNsPos);
+            $className = substr($className, $lastNsPos + 1);
+            $fileName  = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
+        }
+        $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
+
+        return include $fileName;
+    }
+}
