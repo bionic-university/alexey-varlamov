@@ -15,11 +15,20 @@ class Autoloader
         return self::$instance;
     }
 
+    /**
+     * Register an autoloader
+     */
     public static function init()
     {
         spl_autoload_register(array(self::instance(), 'autoload'));
     }
 
+    /**
+     * Include declared class
+     *
+     * @param $class
+     * @return mixed
+     */
     private function autoload($class)
     {
         $className = ltrim($class, '\\');

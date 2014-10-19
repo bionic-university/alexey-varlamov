@@ -11,9 +11,12 @@ class Shell_CsvScriptParser extends Shell_Abstract
                 $file         = $this->getArg('f');
                 $delimiter    = ($this->getArg('d') && $this->getArg('d') !== true) ? $this->getArg('d') : null;
                 $enclosure    = ($this->getArg('e') && $this->getArg('e') !== true) ? $this->getArg('e') : null;
+                $header       = ($this->getArg('header') && $this->getArg('header') === 'y')
+                                    ? $this->getArg('header')
+                                    : null;
 
-                $parser       = new Parser($file, $delimiter, $enclosure);
-                $parser->csv2Array();
+                $parser       = new Parser($file, $delimiter, $enclosure, $header);
+                print_r($parser->csv2Array());
             } catch (Parser_Exception $e) {
                 echo $e->getMessage()."\n";
                 exit;
@@ -34,10 +37,12 @@ CSV Parser
 ------------------
 Usage: php parser.php --[options]
 
---help      this help
+--help(h)   this help
 --f         path to the CSV file for parsing
 --d         fields delimiter. E.g. ',', ':', 'tab', '\|', '\;' etc.
 --e         fields enclosure. E.g. '\'', '\"', 'empty' - to unset an enclosure, etc.
+--header    possible values: 'y' - first line is a header; 'n' - no header;
+
 
 HELP;
     }

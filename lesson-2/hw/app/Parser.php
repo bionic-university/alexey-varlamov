@@ -5,40 +5,71 @@
  *
  * Convert csv file into array
  */
-class Parser/* extends SplFileObject*/
+class Parser
 {
     protected $file         = null;
     protected $delimiter    = null;
     protected $enclosure    = null;
+    protected $header       = null;
+    protected $values       = array();
 
     /**
      * @param $file
      * @param $delimiter
      * @param $enclosure
+     * @param $header
      */
-    public function __construct($file, $delimiter, $enclosure)
+    public function __construct($file, $delimiter, $enclosure, $header)
     {
         $this->validate($file);
         $this->file = new SplFileObject($file);
-        $this->delimiter = (isset($delimiter)) ? $delimiter : $this->file->getCsvControl()[0];
+        $this->file->setFlags(SplFileObject::READ_CSV);
+        $this->delimiter    = $this->setDelimiter($delimiter);
         if ($enclosure === 'empty') {
             $this->enclosure = '';
         } else {
             $this->enclosure = (isset($enclosure)) ? $enclosure : $this->file->getCsvControl()[1];
         }
+        $this->header = (isset($header)) ? $header : null;
+        $this->file->setCsvControl($this->delimiter, $this->enclosure);
     }
 
+    /**
+     * Convert csv file into array
+     *
+     * @return array
+     */
     public function csv2Array()
     {
-        $parsed = $this->file->fgetcsv(
-            $this->delimiter,
-            $this->enclosure
-        );
-        $parsed2 = $this->file->next()->fgetcsv(
-            $this->delimiter,
-            $this->enclosure
-        );
-        print_r($parsed2);
+        $header = array();
+        foreach ($this->file as $indx => $row) {
+            if (isset($this->header) && $indx === 0) {
+                $header = array_values($row);
+            } elseif (!$this->header) {
+                $this->values[] = $row;
+            } elseif ($indx> 0 && !empty($header)) {
+                $this->values[] = array_combine($header, $row);
+            }
+        }
+
+        return $this->values;
+    }
+
+    /**
+     * Set delimiter for csv file
+     *
+     * @param $delimiter
+     * @return null|string
+     */
+    public function setDelimiter($delimiter)
+    {
+        if ($delimiter === "\t" || $delimiter === "tab" || $delimiter === "t") {
+            $delimiter = "\t";
+        } elseif (is_null($delimiter)) {
+            $delimiter = $this->file->getCsvControl()[0];
+        }
+
+        return $delimiter;
     }
 
     /**
@@ -56,6 +87,10 @@ class Parser/* extends SplFileObject*/
         $this->ensure(
             is_readable($file),
             "The file '{$file}' is not readable. Please specify a readable file."
+        );
+        $this->ensure(
+            filesize($file),
+            "The file '{$file}' is empty. Please specify another file."
         );
     }
 
