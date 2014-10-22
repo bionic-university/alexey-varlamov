@@ -1,30 +1,32 @@
 <?php
-class Shell_CsvScriptParser extends Shell_Abstract
+namespace Shell;
+
+use Vav\Parser;
+use Vav\Executable;
+use Vav\Parser\ParserException;
+
+class CsvScriptParser extends AbstractShell implements Executable
 {
     /**
-     * Start a file parsing
+     * @return array
+     * @throws ParserException
      */
-    public function run()
+    public function execute()
     {
-        if ($this->getArg('f') && $this->getArg('f') !== true) {
-            try {
-                $file         = $this->getArg('f');
-                $delimiter    = ($this->getArg('d') && $this->getArg('d') !== true) ? $this->getArg('d') : null;
-                $enclosure    = ($this->getArg('e') && $this->getArg('e') !== true) ? $this->getArg('e') : null;
-                $header       = ($this->getArg('header') && $this->getArg('header') === 'y')
-                                    ? $this->getArg('header')
-                                    : null;
+        Parser::ensure(
+            !is_bool($this->getArg('f')),
+            PHP_EOL.'=== Please specify the file for parsing ==='.PHP_EOL.PHP_EOL
+        );
 
-                $parser       = new Parser($file, $delimiter, $enclosure, $header);
-                print_r($parser->csv2Array());
-            } catch (Parser_Exception $e) {
-                echo $e->getMessage()."\n";
-                exit;
-            }
-        } else {
-            echo "\n=== Please specify a file for parsing ===\n\n";
-            die($this->showHelp());
-        }
+        $file         = $this->getArg('f');
+        $delimiter    = ($this->getArg('d') && $this->getArg('d') !== true) ? $this->getArg('d') : null;
+        $enclosure    = ($this->getArg('e') && $this->getArg('e') !== true) ? $this->getArg('e') : null;
+        $header       = ($this->getArg('header') && $this->getArg('header') === 'y')
+                            ? $this->getArg('header')
+                            : null;
+        $parser = new Parser($file, $delimiter, $enclosure, $header);
+
+        return $parser->parse();
     }
 
     /**

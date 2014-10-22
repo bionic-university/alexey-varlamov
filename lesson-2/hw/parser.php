@@ -1,15 +1,25 @@
 <?php
+// set error mode
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// set include path
-$pwd = dirname(__FILE__);
+// define include path
+$pwd = getcwd();
 set_include_path(get_include_path().PATH_SEPARATOR.$pwd.PATH_SEPARATOR.$pwd.DIRECTORY_SEPARATOR."app");
 
 // include class autoloader
-require_once('lib/Autoloader.php');
+require_once('lib' . DIRECTORY_SEPARATOR . 'Autoloader.php');
 Autoloader::init();
 
+// namespaces
+use Shell\CsvScriptParser;
+use Vav\Parser\ParserException;
+
 // parse csv
-$csvParser = new Shell_CsvScriptParser;
-$csvParser->run();
+try {
+    $csvParser = new CsvScriptParser;
+    $parsedCsv = $csvParser->execute();
+    print_r($parsedCsv);
+} catch (ParserException $e) {
+    echo $e->getMessage();
+}

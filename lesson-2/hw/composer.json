@@ -1,0 +1,8 @@
+{
+    "autoload": {
+        "psr-0": {
+            "App": "src/app/",
+            "Shell": "src/Shell"
+        }
+    }
+}

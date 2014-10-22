@@ -1,9 +1,13 @@
 <?php
-abstract class Shell_Abstract
+namespace Shell;
+
+abstract class AbstractShell
 {
+    /**
+     * @var array - input arguments
+     */
     protected $args = array();
 
-    abstract function run();
     abstract function showHelp();
 
     public function __construct()
@@ -17,7 +21,7 @@ abstract class Shell_Abstract
      *
      * @return object $this
      */
-    protected function parseArgs()
+    private function parseArgs()
     {
         $current = null;
         foreach ($_SERVER['argv'] as $arg) {
