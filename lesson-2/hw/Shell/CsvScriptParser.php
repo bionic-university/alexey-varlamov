@@ -3,30 +3,42 @@ namespace Shell;
 
 use Vav\Parser;
 use Vav\Executable;
-use Vav\Parser\ParserException;
 
 class CsvScriptParser extends AbstractShell implements Executable
 {
     /**
+     * @var Parser
+     */
+    private $parser;
+    /**
      * @return array
-     * @throws ParserException
      */
     public function execute()
     {
+        $this->parser = new Parser();
+        $this->defineCsvControl();
+
+        return $this->parser->parse();
+    }
+
+    /**
+     *
+     * @throws ShellException
+     */
+    private function defineCsvControl()
+    {
         Parser::ensure(
             !is_bool($this->getArg('f')),
-            PHP_EOL.'=== Please specify the file for parsing ==='.PHP_EOL.PHP_EOL
+            PHP_EOL.'=== Please specify the file for parsing ==='.PHP_EOL.PHP_EOL,
+            'Shell\ShellException'
         );
 
-        $file         = $this->getArg('f');
-        $delimiter    = ($this->getArg('d') && $this->getArg('d') !== true) ? $this->getArg('d') : null;
-        $enclosure    = ($this->getArg('e') && $this->getArg('e') !== true) ? $this->getArg('e') : null;
-        $header       = ($this->getArg('header') && $this->getArg('header') === 'y')
-                            ? $this->getArg('header')
-                            : null;
-        $parser = new Parser($file, $delimiter, $enclosure, $header);
-
-        return $parser->parse();
+        $this->parser->setFile($this->getArg('f'));
+        $this->parser->setCsvControl(
+            $this->getArg('d'),
+            $this->getArg('e'),
+            $this->getArg('header')
+        );
     }
 
     /**

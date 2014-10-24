@@ -13,6 +13,7 @@ Autoloader::init();
 
 // namespaces
 use Shell\CsvScriptParser;
+use Shell\ShellException;
 use Vav\Parser\ParserException;
 
 // parse csv
@@ -22,4 +23,8 @@ try {
     print_r($parsedCsv);
 } catch (ParserException $e) {
     echo $e->getMessage();
+} catch (ShellException $e) {
+    echo $e->getMessage();
+} catch (Exception $e) {
+    echo $e->__toString();
 }

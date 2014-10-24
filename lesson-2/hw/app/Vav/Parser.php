@@ -2,6 +2,7 @@
 namespace Vav;
 
 use SplFileObject;
+use Shell\ShellException;
 use Vav\Parser\ParserException;
 
 /**
@@ -9,39 +10,44 @@ use Vav\Parser\ParserException;
  *
  * Convert csv file into array
  */
-class Parser
+class Parser implements Parsable
 {
     /**
      * @var SplFileObject
      */
     protected $file;
-    protected $delimiter;
-    protected $enclosure;
-    protected $header;
 
     /**
-     * @param $file
-     * @param $delimiter
-     * @param $enclosure
-     * @param $header
+     * @var bool $header -include CSV header or not
      */
-    public function __construct($file, $delimiter, $enclosure, $header)
+    protected $header;
+
+    public function __construct()
     {
-        $this->validate($file);
-        $this->setFile($file);
-        $this->setDelimiter($delimiter);
-        $this->setEnclosure($enclosure);
-        $this->header = (isset($header)) ? $header : null;
+
     }
 
     /**
      * @param $file - csv file name
      */
-    private function setFile($file)
+    public function setFile($file)
     {
+        $this->validate($file);
         $this->file = new SplFileObject($file);
         $this->file->setFlags(SplFileObject::READ_CSV);
-        $this->file->setCsvControl($this->delimiter, $this->enclosure);
+    }
+
+    /**
+     * @param string $delimiter
+     * @param string $enclosure
+     * @param null $header
+     */
+    public function setCsvControl($delimiter = ',', $enclosure = '"', $header = null)
+    {
+        $delimiter = $this->setDelimiter($delimiter);
+        $enclosure = $this->setEnclosure($enclosure);
+        $this->setHeader($header);
+        $this->file->setCsvControl($delimiter, $enclosure);
     }
 
     /**
@@ -79,32 +85,47 @@ class Parser
     }
 
     /**
-     * Set delimiter for csv file
-     *
      * @param $delimiter
-     * @return null|string
+     * @return string
      */
     private function setDelimiter($delimiter)
     {
         if ($delimiter === "\t" || $delimiter === 'tab' || $delimiter === 't') {
             $delimiter = "\t";
-        } elseif (is_null($delimiter)) {
+        } elseif (is_bool($delimiter)) {
             $delimiter = $this->file->getCsvControl()[0];
         }
 
-        return $this->delimiter = $delimiter;
+        return $delimiter;
     }
 
     /**
      * @param $enclosure
+     * @return string
      */
     private function setEnclosure($enclosure)
     {
         if ($enclosure === 'empty') {
-            $this->enclosure = '';
-        } else {
-            $this->enclosure = (isset($enclosure)) ? $enclosure : $this->file->getCsvControl()[1];
+            $enclosure = '';
+        } elseif(is_bool($enclosure)) {
+            $enclosure = $this->file->getCsvControl()[1];
         }
+
+        return $enclosure;
+    }
+
+    /**
+     * @param $header
+     */
+    private function setHeader($header)
+    {
+        if ($header === 'y') {
+            $header = true;
+        } else {
+            $header = null;
+        }
+
+        $this->header = $header;
     }
 
     /**
@@ -115,27 +136,31 @@ class Parser
     {
         self::ensure(
             file_exists($file),
-            'The file ' . $file . ' does not exists.'.PHP_EOL
+            'The file ' . $file . ' does not exists.'.PHP_EOL,
+            'Vav\Parser\ParserException'
         );
         self::ensure(
             is_readable($file),
-            'The file ' . $file . ' is not readable. Please specify a readable file.'.PHP_EOL
+            'The file ' . $file . ' is not readable. Please specify a readable file.'.PHP_EOL,
+            'Vav\Parser\ParserException'
         );
         self::ensure(
             filesize($file),
-            'The file ' . $file . ' is empty. Please specify another file.'.PHP_EOL
+            'The file ' . $file . ' is empty. Please specify another file.'.PHP_EOL,
+            'Vav\Parser\ParserException'
         );
     }
 
     /**
      * @param $expr
      * @param $message
-     * @throws ParserException
+     * @param $exceptionClass
+     * @throws ParserException | ShellException
      */
-    public static function ensure($expr, $message)
+    public static function ensure($expr, $message, $exceptionClass)
     {
         if (!$expr) {
-            throw new ParserException($message);
+            throw new $exceptionClass($message);
         }
     }
 }
