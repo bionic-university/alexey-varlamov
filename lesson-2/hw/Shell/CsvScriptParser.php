@@ -10,6 +10,7 @@ class CsvScriptParser extends AbstractShell implements Executable
      * @var Parser
      */
     private $parser;
+
     /**
      * @return array
      */
@@ -22,7 +23,6 @@ class CsvScriptParser extends AbstractShell implements Executable
     }
 
     /**
-     *
      * @throws ShellException
      */
     private function defineCsvControl()

@@ -18,14 +18,9 @@ class Parser implements Parsable
     protected $file;
 
     /**
-     * @var bool $header -include CSV header or not
+     * @var bool $header - include CSV header or not
      */
     protected $header;
-
-    public function __construct()
-    {
-
-    }
 
     /**
      * @param $file - csv file name
@@ -47,6 +42,11 @@ class Parser implements Parsable
         $delimiter = $this->setDelimiter($delimiter);
         $enclosure = $this->setEnclosure($enclosure);
         $this->setHeader($header);
+        $this->ensure(
+            $this->file instanceof SplFileObject,
+            'Please, specify the file first.'.PHP_EOL,
+            'Vav\Parser\ParserException'
+        );
         $this->file->setCsvControl($delimiter, $enclosure);
     }
 
@@ -86,7 +86,7 @@ class Parser implements Parsable
 
     /**
      * @param $delimiter
-     * @return string
+     * @return string $delimiter
      */
     private function setDelimiter($delimiter)
     {
