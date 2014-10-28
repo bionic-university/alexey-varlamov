@@ -1,4 +1,3 @@
 alexey-varlamov
 ===============
-# Git initial commit 
-1
+# Git initial commit
