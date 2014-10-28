@@ -1,4 +1,6 @@
 <?php
+namespace Pcr;
+
 class Autoloader
 {
     private static $instance;

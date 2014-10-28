@@ -8,8 +8,8 @@ $pwd = getcwd();
 set_include_path(get_include_path().PATH_SEPARATOR.$pwd.PATH_SEPARATOR.$pwd.DIRECTORY_SEPARATOR."app");
 
 // include class autoloader
-require_once('lib' . DIRECTORY_SEPARATOR . 'Autoloader.php');
-Autoloader::init();
+require_once('lib' . DIRECTORY_SEPARATOR . 'Pcr-4' . DIRECTORY_SEPARATOR . 'Autoloader.php');
+Pcr\Autoloader::init();
 
 // namespaces
 use Shell\CsvScriptParser;
