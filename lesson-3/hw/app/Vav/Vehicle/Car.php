@@ -8,6 +8,7 @@ use Vav\Vehicle;
  */
 class Car extends Vehicle
 {
-    private $category = 'A';
+    protected $type     = 'car';
+    protected $category = 'B';
 
 } 

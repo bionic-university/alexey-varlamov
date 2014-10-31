@@ -1,5 +1,5 @@
 <?php
-namespace Vav\Vehicle;
+namespace Vav;
 
 /**
  * Class Vehicle for storing info about transport
@@ -7,11 +7,18 @@ namespace Vav\Vehicle;
  * @author Alexey Varlamov <l.e.h.a.vav@gmail.com>
  * @version 1.0
  */
-abstract class Vehicle {
-    public $category;
+abstract class Vehicle
+{
+    protected $category;
+    protected $type;
 
-    public static function match()
+    public function getCategory()
     {
-        echo 'Hello in Vehicle';
+        return $this->category;
+    }
+
+    public function getType()
+    {
+        return $this->type;
     }
 } 

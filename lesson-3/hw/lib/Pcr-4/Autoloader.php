@@ -10,8 +10,11 @@ class Autoloader
 {
     private static $instance;
 
+    private function __construct(){}
+    private function __clone(){}
+
     /**
-     * @return Autoloader
+     * @return object $instance Autoloader
      */
     private static function instance()
     {
