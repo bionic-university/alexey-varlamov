@@ -17,7 +17,7 @@ class Driver {
     private $drivingLicense;
 
     /**
-     * Ititialize \SplObjectStorage
+     * Initialize \SplObjectStorage
      */
     public function __construct()
     {
@@ -42,7 +42,6 @@ class Driver {
 
     /**
      * @return \SplObjectStorage
-     * @throws DriverException
      */
     public function getGarage()
     {
