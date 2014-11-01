@@ -14,61 +14,19 @@ Pcr\Autoloader::init();
 // namespaces
 use Shell\DriverScript;
 use Shell\ShellException;
-use \Vav\Vehicle;
-use \Vav\Driver;
-use \Vav\Inspector;
+use Vav\Vehicle\VehicleException;
+use Vav\Driver\DriverException;
 
-$categories = ['c', 'b'];
-$transport  = ['truck', 'car'];
-
-$driver    = new Driver();
-$inspector = new Inspector();
-
-$driver->setDrivingLicense($categories);
-
-//$trans = '';
-foreach ($transport as $trans) {
-    switch(strtolower(trim($trans))) {
-        case 'moto':
-        case 'motorcycle':
-        case 'moped':
-        case 'bike':
-            $driver->attach(new \Vav\Vehicle\Motorcycle());
-            break;
-        case 'car':
-        case 'auto':
-        case 'autocar':
-        case 'automobile':
-        case 'machine':
-            $driver->attach(new \Vav\Vehicle\Car());
-            break;
-        case 'truck':
-        case 'lorry':
-            $driver->attach(new \Vav\Vehicle\Truck());
-            break;
-        case 'bus':
-        case 'autobus':
-            $driver->attach(new \Vav\Vehicle\Bus());
-            break;
-        case 'tram':
-        case 'trolley':
-        case 'streetcar':
-            $driver->attach(new \Vav\Vehicle\Trams());
-            break;
-        default:
-            throw new Exception('Unknown transport. Please specify another kind of transport.');
-            break;
-    }
+try {
+    $driverScript = new DriverScript();
+    $result = $driverScript->execute();
+    echo PHP_EOL.implode(PHP_EOL, $result).PHP_EOL.PHP_EOL;
+} catch (ShellException $e) {
+    echo $e->getMessage().PHP_EOL;
+} catch (VehicleException $e) {
+    echo $e->getMessage().PHP_EOL;
+} catch (DriverException $e) {
+    echo $e->getMessage().PHP_EOL;
+} catch (Exception $e) {
+    echo $e->__toString().PHP_EOL;
 }
-
-$result = [];
-foreach ($driver->getDrivingLicense() as $category) {
-    $result[] = $inspector->check($driver->getGarage(), $category);
-}
-
-while ($driver->getGarage()->valid()) {
-    $result[] = 'You cannot drive '.$driver->getGarage()->current()->getType().'. Boost your skills.';
-    $driver->getGarage()->next();
-}
-
-echo implode(PHP_EOL, $result).PHP_EOL;

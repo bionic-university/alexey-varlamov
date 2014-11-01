@@ -8,6 +8,11 @@ namespace Vav;
  */
 class Inspector implements CheckInterface
 {
+    /**
+     * @param \SplObjectStorage $storage
+     * @param string $license
+     * @return string
+     */
     public function check(\SplObjectStorage $storage, $license)
     {
         $result = '';

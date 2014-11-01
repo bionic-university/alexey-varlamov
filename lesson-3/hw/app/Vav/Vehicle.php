@@ -9,8 +9,8 @@ namespace Vav;
  */
 abstract class Vehicle
 {
-    protected $category;
-    protected $type;
+    protected $category = [];
+    protected $type = [];
 
     public function getCategory()
     {

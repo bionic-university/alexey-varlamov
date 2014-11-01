@@ -1,6 +1,8 @@
 <?php
 namespace Vav;
 
+use Vav\Driver\DriverException;
+
 /**
  * Class Driver
  */
@@ -40,6 +42,7 @@ class Driver {
 
     /**
      * @return \SplObjectStorage
+     * @throws DriverException
      */
     public function getGarage()
     {
@@ -62,4 +65,6 @@ class Driver {
         $drivingLicense = array_map('strtoupper', $drivingLicense);
         $this->drivingLicense = $drivingLicense;
     }
+
+
 } 

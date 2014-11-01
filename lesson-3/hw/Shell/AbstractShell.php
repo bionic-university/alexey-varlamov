@@ -23,15 +23,15 @@ abstract class AbstractShell
      */
     private function parseArgs()
     {
-        $current = null;
+        $current = [];
         foreach ($_SERVER['argv'] as $arg) {
             if ($arg === 'parser.php') {
                 continue;
             }
 
             $match = array();
-            if (preg_match('/^--([\w\d]+)$/i', $arg, $match) ||
-                preg_match('/^-([\w\d]+)$/', $arg, $match)
+            if (preg_match('/^--([\w\d,]+)$/i', $arg, $match) ||
+                preg_match('/^-([\w\d,]+)$/', $arg, $match)
             ) {
                 $current = $match[1];
                 $this->args[$current] = true;
