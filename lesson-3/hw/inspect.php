@@ -20,13 +20,13 @@ use Vav\Driver\DriverException;
 try {
     $driverScript = new DriverScript();
     $result = $driverScript->execute();
-    echo PHP_EOL.implode(PHP_EOL, $result).PHP_EOL.PHP_EOL;
+    echo PHP_EOL . implode(PHP_EOL, $result) . PHP_EOL . PHP_EOL;
 } catch (ShellException $e) {
-    echo $e->getMessage().PHP_EOL;
+    echo $e->getMessage() . PHP_EOL;
 } catch (VehicleException $e) {
-    echo $e->getMessage().PHP_EOL;
+    echo $e->getMessage() . PHP_EOL;
 } catch (DriverException $e) {
-    echo $e->getMessage().PHP_EOL;
+    echo $e->getMessage() . PHP_EOL;
 } catch (Exception $e) {
-    echo $e->__toString().PHP_EOL;
+    echo $e->__toString() . PHP_EOL;
 }

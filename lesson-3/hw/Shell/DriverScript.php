@@ -99,7 +99,7 @@ class DriverScript extends AbstractShell implements Executable
 
         $this->driver->getGarage()->rewind();
         while ($this->driver->getGarage()->valid()) {
-            $result[] = 'You cannot drive '.$this->driver->getGarage()->current()->getType().'. Boost your skills.';
+            $result[] = 'You cannot drive ' . $this->driver->getGarage()->current()->getType() . '. Boost your skills.';
             $this->driver->getGarage()->next();
         }
         $result = array_diff($result, array(''));

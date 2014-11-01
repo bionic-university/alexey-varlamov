@@ -64,6 +64,4 @@ class Driver {
         $drivingLicense = array_map('strtoupper', $drivingLicense);
         $this->drivingLicense = $drivingLicense;
     }
-
-
 } 

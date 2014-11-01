@@ -19,8 +19,8 @@ class Inspector implements CheckInterface
         $storage->rewind();
         while ($storage->valid()) {
             if ($license === $storage->current()->getCategory()) {
-                $result = 'Your driving license contains the category "'.$storage->current()->getCategory().'". ';
-                $result .= 'You can drive '.$storage->current()->getType().'.';
+                $result = 'Your driving license contains the category "' . $storage->current()->getCategory() . '". ';
+                $result .= 'You can drive ' . $storage->current()->getType() . '.';
                 $storage->detach($storage->current());
                 break;
             }
