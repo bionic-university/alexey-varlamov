@@ -3,12 +3,8 @@ namespace Shell;
 
 use Vav\Driver;
 use Vav\Inspector;
-use Vav\Vehicle\Bus;
-use Vav\Vehicle\Car;
-use Vav\Vehicle\Motorcycle;
-use Vav\Vehicle\Truck;
-use Vav\Vehicle\Trams;
 use Vav\Executable;
+use Vav\Vehicle;
 use Vav\Vehicle\VehicleException;
 
 class DriverScript extends AbstractShell implements Executable
@@ -30,15 +26,10 @@ class DriverScript extends AbstractShell implements Executable
      */
     private $inspector;
 
-    /**
-     * @return array
-     * @throws ShellException
-     * @throws VehicleException
-     */
     public function execute()
     {
         $this->validateArgs();
-        $this->driver = new Driver();
+        $this->driver    = new Driver();
         $this->inspector = new Inspector();
         $this->driver->setDrivingLicense($this->categories);
         $this->setGarage();
@@ -53,37 +44,7 @@ class DriverScript extends AbstractShell implements Executable
     private function setGarage()
     {
         foreach ($this->transport as $trans) {
-            switch(strtolower($trans)) {
-                case 'moto':
-                case 'motorcycle':
-                case 'moped':
-                case 'bike':
-                    $this->driver->attach(new Motorcycle());
-                    break;
-                case 'car':
-                case 'auto':
-                case 'autocar':
-                case 'automobile':
-                case 'machine':
-                    $this->driver->attach(new Car());
-                    break;
-                case 'truck':
-                case 'lorry':
-                    $this->driver->attach(new Truck());
-                    break;
-                case 'bus':
-                case 'autobus':
-                    $this->driver->attach(new Bus());
-                    break;
-                case 'tram':
-                case 'trolley':
-                case 'streetcar':
-                    $this->driver->attach(new Trams());
-                    break;
-                default:
-                    throw new VehicleException('Unknown transport. Please specify another kind of transport.');
-                    break;
-            }
+            $this->driver->attach(Vehicle::getVehicleInstance($trans));
         }
     }
 
