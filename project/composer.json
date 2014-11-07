@@ -1,0 +1,11 @@
+{
+    "require": {
+        "symfony/console": "2.6.*@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Symfony\\": "vendor/symfony/console/Symfony",
+            "Psr\\": "src/lib/Pcr-4/"
+        }
+    }
+}
