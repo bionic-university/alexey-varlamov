@@ -1,5 +1,5 @@
 <?php
-namespace Pcr;
+namespace Psr;
 
 /**
  * Class Autoloader include classes dynamically
