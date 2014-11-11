@@ -2,12 +2,22 @@
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
 
-$vendorDir = dirname(dirname(__FILE__)).'/vendor/';
+$pwd = PATH_SEPARATOR.__DIR__.PATH_SEPARATOR.__DIR__.DIRECTORY_SEPARATOR.'app';
+set_include_path(get_include_path().$pwd);
+
+$vendorDir = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR;
 require_once $vendorDir.'autoload.php';
 
 use Psr\Autoloader;
-use Symfony\Component\Console\Application;
+use Shell\ShellController;
+//use Symfony\Component\Console\Application;
+//use Symfony\Component\Console\Input\InputInterface;
+//use Symfony\Component\Console\Input\InputArgument;
+//use Symfony\Component\Console\Input\InputOption;
+//use Symfony\Component\Console\Output\OutputInterface;
+//$console = new Application();
+//$console->run();
 
 Autoloader::init();
-$console = new Application();
-$console->run();
+$shell = new ShellController();
+$shell->execute();
