@@ -4,28 +4,41 @@ namespace Shell;
 use Vav\GoalManager;
 use Vav\Executable;
 
-class ShellController extends AbstractShell implements Executable
+class ShellRequestHandler extends AbstractShell implements Executable
 {
+    private $cmd    = 'get';
+
     public function execute()
     {
-        $this->validateArgs();
-        $this->handleRequest();
-        $goal = new GoalManager($this->getArg('g'));
-        $goal->addGoal();
 
-//        return $result;
     }
 
-    private function handleRequest()
+    protected function prepareParams()
     {
+        $current = null;
+        foreach ($_SERVER['argv'] as $arg) {
+            if ($arg === 'index.php') {
+                continue;
+            }
 
+            $match = array();
+            if (preg_match('/^--([\w\d,]+)$/i', $arg, $match) ||
+                preg_match('/^-([\w\d,]+)$/i', $arg, $match)
+            ) {
+                $this->cmd = $match[1];
+                $current = $match[1];
+//                $this->args[$current] = true;
+            } else {
+                if (preg_match('/([\w\d]+)=([\w\d]+)/i', $arg, $match)) {
+                    $this->args[$match[1]] = $match[2];
+                } elseif ($current) {
+                    $this->args[$current] = $arg;
+                }
+            }
+        }
     }
 
-    /**
-     * @return bool
-     * @throws ShellException
-     */
-    private function validateArgs()
+    protected function validate()
     {
         /*if (is_bool($this->getArg('t'))) {
             throw new ShellException('Please specify transport(ex. -t car,bike,tram).');
@@ -40,7 +53,7 @@ class ShellController extends AbstractShell implements Executable
     /**
      * Show help
      */
-    public function showHelp()
+    protected function showHelp()
     {
         return <<<HELP
 CSV Parser

@@ -6,26 +6,23 @@ abstract class AbstractShell
     /**
      * @var array - input arguments
      */
-    private $args = [];
-
-    abstract function showHelp();
+    protected $args = [];
 
     public function __construct()
     {
-        $this->parseArgs();
+        $this->prepareParams();
         $this->_showHelp();
+        $this->validate();
     }
 
     /**
      * Parse input arguments
-     *
-     * @return object $this
      */
-    private function parseArgs()
+    protected function prepareParams()
     {
         $current = null;
         foreach ($_SERVER['argv'] as $arg) {
-            if ($arg === 'parser.php') {
+            if ($arg === 'index.php') {
                 continue;
             }
 
@@ -36,13 +33,12 @@ abstract class AbstractShell
                 $current = $match[1];
                 $this->args[$current] = true;
             } else {
+//                echo $arg . PHP_EOL;
                 if ($current) {
                     $this->args[$current] = $arg;
                 }
             }
         }
-
-        return $this;
     }
 
     /**
@@ -78,4 +74,18 @@ abstract class AbstractShell
             die($this->showHelp());
         }
     }
+
+    /**
+     * Show app help
+     *
+     * @return mixed
+     */
+    abstract protected function showHelp();
+
+    /**
+     * Validate input params
+     *
+     * @return bool - true or throw exception
+     */
+    abstract protected function validate();
 }

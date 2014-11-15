@@ -9,7 +9,7 @@ $vendorDir = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_S
 require_once $vendorDir.'autoload.php';
 
 use Psr\Autoloader;
-use Shell\ShellController;
+use Shell\ShellRequestHandler;
 //use Symfony\Component\Console\Application;
 //use Symfony\Component\Console\Input\InputInterface;
 //use Symfony\Component\Console\Input\InputArgument;
@@ -19,5 +19,5 @@ use Shell\ShellController;
 //$console->run();
 
 Autoloader::init();
-$shell = new ShellController();
-$shell->execute();
+$request = new ShellRequestHandler();
+$request->execute();
