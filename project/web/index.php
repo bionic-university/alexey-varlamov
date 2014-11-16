@@ -2,14 +2,16 @@
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
 
-$pwd = PATH_SEPARATOR.__DIR__.PATH_SEPARATOR.__DIR__.DIRECTORY_SEPARATOR.'app';
-set_include_path(get_include_path().$pwd);
+require '..'.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'config.php';
 
-$vendorDir = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR;
+$appRoot= dirname(__DIR__).DS.'src'.DS;
+$vendorDir = dirname(__DIR__).DS.'vendor'.DS;
+set_include_path(get_include_path().PS.$appRoot);
+
 require_once $vendorDir.'autoload.php';
+Psr\Autoloader::init();
 
-use Psr\Autoloader;
-use Shell\ShellRequestHandler;
+use Routing\Router;
 //use Symfony\Component\Console\Application;
 //use Symfony\Component\Console\Input\InputInterface;
 //use Symfony\Component\Console\Input\InputArgument;
@@ -18,6 +20,5 @@ use Shell\ShellRequestHandler;
 //$console = new Application();
 //$console->run();
 
-Autoloader::init();
-$request = new ShellRequestHandler();
-$request->execute();
+$router = new Router();
+$router->process();

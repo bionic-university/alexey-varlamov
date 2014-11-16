@@ -3,7 +3,7 @@
  * Interface Executable
  */
 
-namespace Vav;
+namespace Vav\CashTarget\Controller;
 
 interface Executable
 {

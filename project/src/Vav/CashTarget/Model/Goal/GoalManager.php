@@ -3,7 +3,7 @@
  * Class for managing goals
  */
 
-namespace Vav\Goal;
+namespace Vav\CashTarget\Model\Goal;
 
 
 class GoalManager

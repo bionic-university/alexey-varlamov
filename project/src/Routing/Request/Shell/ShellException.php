@@ -3,7 +3,7 @@
  * Exeptions for shell scripts
  */
 
-namespace Shell;
+namespace Routing\Request\Shell;
 
 
 class ShellException extends \Exception

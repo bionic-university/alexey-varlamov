@@ -3,7 +3,7 @@
  * Class Goal
  */
 
-namespace Vav;
+namespace Vav\CashTarget\Model;
 
 
 class Goal

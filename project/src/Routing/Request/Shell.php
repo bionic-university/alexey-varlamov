@@ -1,7 +1,9 @@
 <?php
-namespace Shell;
+namespace Routing\Request;
 
-abstract class AbstractShell
+use Routing\Request;
+
+abstract class Shell extends Request
 {
     /**
      * @var array - input arguments
@@ -60,7 +62,7 @@ abstract class AbstractShell
     /**
      * @return array - input args
      */
-    protected function getArgs()
+    public function getParams()
     {
         return $this->args;
     }

@@ -1,18 +1,32 @@
 <?php
-namespace Shell;
+namespace Routing\Request\Shell;
 
-use Vav\GoalManager;
-use Vav\Executable;
+use Vav\CashTarget\Controller\Executable;
+use Routing\Request\Shell;
 
-class ShellRequestHandler extends AbstractShell implements Executable
+class RequestHandler extends Shell implements Executable
 {
-    private $cmd    = 'get';
+    /**
+     * @var string $controller - current controller name
+     */
+    private $controller = 'goal';
 
+    /**
+     * @var string $action - current action name
+     */
+    private $action = 'get';
+
+    /**
+     *
+     */
     public function execute()
     {
 
     }
 
+    /**
+     * Prepare input params - determine command and params
+     */
     protected function prepareParams()
     {
         $current = null;
@@ -25,7 +39,7 @@ class ShellRequestHandler extends AbstractShell implements Executable
             if (preg_match('/^--([\w\d,]+)$/i', $arg, $match) ||
                 preg_match('/^-([\w\d,]+)$/i', $arg, $match)
             ) {
-                $this->cmd = $match[1];
+                $this->action = $match[1];
                 $current = $match[1];
 //                $this->args[$current] = true;
             } else {
@@ -38,6 +52,25 @@ class ShellRequestHandler extends AbstractShell implements Executable
         }
     }
 
+    /**
+     * @return string
+     */
+    public function getController()
+    {
+        return $this->controller;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAction()
+    {
+        return $this->action;
+    }
+
+    /**
+     * @return bool
+     */
     protected function validate()
     {
         /*if (is_bool($this->getArg('t'))) {
