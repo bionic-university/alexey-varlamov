@@ -14,7 +14,7 @@ class RequestHandler extends Shell implements Executable
     /**
      * @var string $action - current action name
      */
-    private $action = 'get';
+    private $action;
 
     /**
      *

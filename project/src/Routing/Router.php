@@ -24,9 +24,13 @@ class Router
         if (class_exists($controllerClass)) {
             $controller = new $controllerClass;
             if (is_callable(array($controller, $action))) {
-                call_user_func_array(array($controller, $action), $this->request->getParams());
-//                $controller->$action($this->request->getParams());
+//                call_user_func_array(array($controller, $action), $this->request->getParams());
+                $controller->$action();
+            } else {
+                throw new \Exception('Method "' . $action . '" does not exists.');
             }
+        } else {
+            throw new \HttpRequestException('Invalid controller name.');
         }
     }
 }

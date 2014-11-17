@@ -15,11 +15,12 @@ class GoalController
 
     }
 
-    public function getAction(...$params)
+    public function getAction()
     {
-        echo PHP_EOL;
-        print_r($params);
-        echo PHP_EOL;
-        die();
+
+    }
+
+    public function setAction(){
+        
     }
 } 
