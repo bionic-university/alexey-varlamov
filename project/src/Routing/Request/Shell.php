@@ -70,9 +70,9 @@ abstract class Shell extends Request
     /**
      * Show help if input argument is 'h' or 'help'
      */
-    private function _showHelp()
+    protected function _showHelp()
     {
-        if (isset($this->args['h']) || isset($this->args['help'])) {
+        if ($this->getAction() === 'h' || $this->getAction() === 'help') {
             die($this->showHelp());
         }
     }

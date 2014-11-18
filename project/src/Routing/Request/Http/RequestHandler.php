@@ -13,7 +13,7 @@ class RequestHandler extends Http
     /**
      * @var string $action - current action name
      */
-    private $action = 'get';
+    private $action = 'index';
 
     /**
      * @return string

@@ -6,6 +6,10 @@ use Routing\Request\Shell;
 
 class RequestHandler extends Shell implements Executable
 {
+    public function __construct()
+    {
+        parent::__construct();
+    }
     /**
      * @var string $controller - current controller name
      */
@@ -14,7 +18,7 @@ class RequestHandler extends Shell implements Executable
     /**
      * @var string $action - current action name
      */
-    private $action;
+    private $action = 'index';
 
     /**
      *
