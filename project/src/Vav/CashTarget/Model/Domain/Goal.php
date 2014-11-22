@@ -3,22 +3,18 @@
  * Class Goal
  */
 
-namespace Vav\CashTarget\Model;
+namespace Vav\CashTarget\Model\Domain;
 
+use Vav\CashTarget\Model\DomainObject;
 
-class Goal
+class Goal extends DomainObject
 {
-    private $title;
+    private $name;
     private $price;
     private $deadline;
     private $fPeriod;
     private $fSum;
     private $isAutoFunding;
-
-    public function __construct()
-    {
-
-    }
 
     /**
      * @return mixed
@@ -93,7 +89,7 @@ class Goal
     }
 
     /**
-     * @param mixed $price
+     * @param float $price
      */
     public function setPrice($price)
     {
@@ -103,18 +99,16 @@ class Goal
     /**
      * @return mixed
      */
-    public function getTitle()
+    public function getName()
     {
-        return $this->title;
+        return $this->name;
     }
 
     /**
-     * @param mixed $title
+     * @param mixed $name
      */
-    public function setTitle($title)
+    public function setName($name)
     {
-        $this->title = $title;
+        $this->name = $name;
     }
-
-
 } 

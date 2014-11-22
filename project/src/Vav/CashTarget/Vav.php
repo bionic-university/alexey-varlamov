@@ -8,5 +8,8 @@ namespace Vav\CashTarget;
 
 class Vav
 {
-
-} 
+    public static function log($message)
+    {
+        die($message);
+    }
+}

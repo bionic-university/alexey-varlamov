@@ -28,6 +28,7 @@ abstract class Request
     }
 
     abstract public function getParams();
+    abstract public function getParam($name);
     abstract public function getController();
     abstract public function getAction();
 }

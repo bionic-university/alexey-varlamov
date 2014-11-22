@@ -8,7 +8,7 @@ abstract class Shell extends Request
     /**
      * @var array - input arguments
      */
-    protected $args = [];
+    protected $params = [];
 
     public function __construct()
     {
@@ -33,11 +33,11 @@ abstract class Shell extends Request
                 preg_match('/^-([\w\d,]+)$/', $arg, $match)
             ) {
                 $current = $match[1];
-                $this->args[$current] = true;
+                $this->params[$current] = true;
             } else {
 //                echo $arg . PHP_EOL;
                 if ($current) {
-                    $this->args[$current] = $arg;
+                    $this->params[$current] = $arg;
                 }
             }
         }
@@ -49,22 +49,22 @@ abstract class Shell extends Request
      * @param string $name      - name of the argument
      * @return mixed $result    - argument value or false
      */
-    protected function getArg($name)
+    public function getParam($name)
     {
         $result = false;
-        if (isset($this->args[$name])) {
-            $result = $this->args[$name];
+        if (isset($this->params[$name])) {
+            $result = $this->params[$name];
         }
 
         return $result;
     }
 
     /**
-     * @return array - input args
+     * @return array - input params
      */
     public function getParams()
     {
-        return $this->args;
+        return $this->params;
     }
 
     /**
@@ -82,7 +82,7 @@ abstract class Shell extends Request
      *
      * @return mixed
      */
-    abstract protected function showHelp();
+    abstract public function showHelp();
 
     /**
      * Validate input params

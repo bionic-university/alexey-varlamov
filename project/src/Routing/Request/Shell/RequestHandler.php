@@ -4,7 +4,7 @@ namespace Routing\Request\Shell;
 use Vav\CashTarget\Controller\Executable;
 use Routing\Request\Shell;
 
-class RequestHandler extends Shell implements Executable
+class RequestHandler extends Shell
 {
     public function __construct()
     {
@@ -19,14 +19,6 @@ class RequestHandler extends Shell implements Executable
      * @var string $action - current action name
      */
     private $action = 'index';
-
-    /**
-     *
-     */
-    public function execute()
-    {
-
-    }
 
     /**
      * Prepare input params - determine command and params
@@ -45,12 +37,12 @@ class RequestHandler extends Shell implements Executable
             ) {
                 $this->action = $match[1];
                 $current = $match[1];
-//                $this->args[$current] = true;
+//                $this->params[$current] = true;
             } else {
                 if (preg_match('/([\w\d]+)=([\w\d]+)/i', $arg, $match)) {
-                    $this->args[$match[1]] = $match[2];
+                    $this->params[$match[1]] = $match[2];
                 } elseif ($current) {
-                    $this->args[$current] = $arg;
+                    $this->params[$current] = $arg;
                 }
             }
         }
@@ -90,10 +82,10 @@ class RequestHandler extends Shell implements Executable
     /**
      * Show help
      */
-    protected function showHelp()
+    public function showHelp()
     {
         return <<<HELP
-CSV Parser
+Cash Target
 ------------------
 Usage: php inspect.php --[options]
 

@@ -33,7 +33,7 @@ class Router
 //                call_user_func_array(array($controller, $action), $this->request->getParams());
                 $controller->$action();
             } else {
-                throw new \Exception('Method "' . $action . '" does not exists.');
+                throw new \Exception('Method "' . $this->request->getAction() . '" does not exists.');
             }
         } else {
             throw new \HttpRequestException('Invalid controller name.');
