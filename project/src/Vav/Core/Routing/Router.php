@@ -1,7 +1,7 @@
 <?php
-namespace Routing;
+namespace Vav\Core\Routing;
 
-use Routing\Request;
+use Vav\Core\Routing\Request;
 
 class Router
 {

@@ -4,10 +4,10 @@
  *
  * Handle request depending on different interface types
  */
-namespace Routing;
+namespace Vav\Core\Routing;
 
-use Routing\Request\Shell\RequestHandler as Shell;
-use Routing\Request\Http\RequestHandler as Http;
+use Vav\Core\Routing\Request\Shell\RequestHandler as Shell;
+use Vav\Core\Routing\Request\Http\RequestHandler as Http;
 
 abstract class Request
 {

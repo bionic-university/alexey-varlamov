@@ -3,6 +3,7 @@
 namespace Vav\CashTarget\Model;
 
 use Vav\CashTarget\Vav;
+use Vav\CashTarget\Model\Mapper\Collection;
 
 abstract class Mapper
 {
@@ -31,6 +32,7 @@ abstract class Mapper
      */
     public function load($id)
     {
+        $array = [];
         try {
             $this->selectStmt()->bindParam('id', $id, \PDO::PARAM_INT);
             $this->selectStmt()->execute();
@@ -61,8 +63,50 @@ abstract class Mapper
     {
         $this->doInsert($obj);
     }
+
+    public function update(DomainObject $obj)
+    {
+        $this->doUpdate($obj);
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getCollection()
+    {
+        $this->selectAllStmt()->execute();
+        return $this->createCollection(
+            $this->selectAllStmt()->fetchAll(\PDO::FETCH_ASSOC)
+        );
+    }
+
+    /**
+     * @param DomainObject $obj
+     * @return string
+     */
+    public function prepareFields(DomainObject $obj)
+    {
+        return implode('`, `', array_keys(get_object_vars($obj)));
+    }
+
+    /**
+     * @param DomainObject $obj
+     * @return string
+     */
+    public function prepareValues(DomainObject $obj)
+    {
+        $values = array_map(
+          function ($el) {
+              return '"' . $el . '"';
+          },
+          get_object_vars($obj)
+        );
+        $values = implode(',', $values);
+
+        return $values;
+    }
     
-    abstract protected function update(DomainObject $obj);
+    abstract protected function doUpdate(DomainObject $obj);
 
     abstract protected function doInsert(DomainObject $obj);
 
@@ -78,4 +122,15 @@ abstract class Mapper
      * @return \PDOStatement
      */
     abstract protected function selectStmt();
+
+    /**
+     * @return \PDOStatement
+     */
+    abstract protected function selectAllStmt();
+
+    /**
+     * @param array $raw
+     * @return Collection
+     */
+    abstract public function createCollection(array $raw);
 }

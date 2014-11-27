@@ -1,7 +1,7 @@
 <?php
-namespace Routing\Request;
+namespace Vav\Core\Routing\Request;
 
-use Routing\Request;
+use Vav\Core\Routing\Request;
 
 abstract class Shell extends Request
 {

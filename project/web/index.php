@@ -11,7 +11,7 @@ set_include_path(get_include_path().PS.$appRoot);
 require_once $vendorDir.'autoload.php';
 Psr\Autoloader::init();
 
-use Routing\Router;
+use Vav\Core\Routing\Router;
 //use Symfony\Component\Console\Application;
 //use Symfony\Component\Console\Input\InputInterface;
 //use Symfony\Component\Console\Input\InputArgument;

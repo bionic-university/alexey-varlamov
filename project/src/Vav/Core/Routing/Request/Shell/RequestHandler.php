@@ -1,8 +1,7 @@
 <?php
-namespace Routing\Request\Shell;
+namespace Vav\Core\Routing\Request\Shell;
 
-use Vav\CashTarget\Controller\Executable;
-use Routing\Request\Shell;
+use Vav\Core\Routing\Request\Shell;
 
 class RequestHandler extends Shell
 {
@@ -42,7 +41,7 @@ class RequestHandler extends Shell
                 if (preg_match('/([\w\d]+)=([\w\d]+)/i', $arg, $match)) {
                     $this->params[$match[1]] = $match[2];
                 } elseif ($current) {
-                    $this->params[$current] = $arg;
+                    $this->params[$arg] = true;
                 }
             }
         }
@@ -94,10 +93,11 @@ Usage: php inspect.php --[options]
 --price         set goal price
 --name          set goal title
 --deadline      set due date: 5d/w/m/y
+--priority      set priority of the goal, 1 is a higher: priority=1, priority=10
 --fsum          set the amount of funding: 120
 --fperiod       set the interval of funding: d/w/m/y
---load          load specific goal and change its params, by calling the above commands: <id> --name car
 --auto          set auto funding by fperiod param: true/false
+--load          load specific goal and change its params, by calling the above commands: <id> --name car
 --report        show goal report: <id>, all
 --optimize      show optimal funding: <id>
 

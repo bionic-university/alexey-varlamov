@@ -1,7 +1,7 @@
 <?php
-namespace Routing\Request\Http;
+namespace Vav\Core\Routing\Request\Http;
 
-use Routing\Request\Http;
+use Vav\Core\Routing\Request\Http;
 
 class RequestHandler extends Http
 {
@@ -31,5 +31,8 @@ class RequestHandler extends Http
         return $this->controller;
     }
 
-
+    public function getParam($name)
+    {
+        return '';
+    }
 }

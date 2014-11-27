@@ -9,12 +9,13 @@ use Vav\CashTarget\Model\DomainObject;
 
 class Goal extends DomainObject
 {
-    private $name;
-    private $price;
-    private $deadline;
-    private $fPeriod;
-    private $fSum;
-    private $isAutoFunding;
+    public $name;
+    public $price;
+    public $priority;
+    public $deadline;
+    public $fperiod;
+    public $fsum;
+    public $auto;
 
     /**
      * @return mixed
@@ -37,15 +38,15 @@ class Goal extends DomainObject
      */
     public function getFPeriod()
     {
-        return $this->fPeriod;
+        return $this->fperiod;
     }
 
     /**
-     * @param mixed $fPeriod
+     * @param mixed $fperiod
      */
-    public function setFPeriod($fPeriod)
+    public function setFPeriod($fperiod)
     {
-        $this->fPeriod = $fPeriod;
+        $this->fperiod = $fperiod;
     }
 
     /**
@@ -53,31 +54,31 @@ class Goal extends DomainObject
      */
     public function getFSum()
     {
-        return $this->fSum;
+        return $this->fsum;
     }
 
     /**
-     * @param mixed $fSum
+     * @param mixed $fsum
      */
-    public function setFSum($fSum)
+    public function setFSum($fsum)
     {
-        $this->fSum = $fSum;
+        $this->fsum = $fsum;
     }
 
     /**
-     * @return mixed
+     * @return int
      */
-    public function getIsAutoFunding()
+    public function getAuto()
     {
-        return $this->isAutoFunding;
+        return $this->auto;
     }
 
     /**
-     * @param mixed $isAutoFunding
+     * @param int $auto
      */
-    public function setIsAutoFunding($isAutoFunding)
+    public function setAuto($auto)
     {
-        $this->isAutoFunding = $isAutoFunding;
+        $this->auto = $auto;
     }
 
     /**
@@ -110,5 +111,21 @@ class Goal extends DomainObject
     public function setName($name)
     {
         $this->name = $name;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPriority()
+    {
+        return $this->priority;
+    }
+
+    /**
+     * @param int $priority
+     */
+    public function setPriority($priority)
+    {
+        $this->priority = $priority;
     }
 } 

@@ -7,7 +7,7 @@
 
 namespace Vav\CashTarget\Controller;
 
-use Routing\Request;
+use Vav\Core\Routing\Request;
 use Vav\CashTarget\Block\Goal as GoalView;
 use Vav\CashTarget\Model\Mapper\GoalMapper;
 use Vav\CashTarget\Model\Domain\Goal;
@@ -61,11 +61,38 @@ class GoalController
             );
 
             $this->block->renderView();
+        } elseif ($this->request->getParam('all')) {
+            $collection = $this->mapper->getCollection();
+            echo PHP_EOL;
+            print_r($collection->getData());
+            echo PHP_EOL;
+            die();
         }
     }
 
     public function setAction()
     {
-        
+        if (count($this->request->getParams())) {
+            $goal = new Goal();
+            $goal->setData($this->request->getParams());
+            $this->mapper->insert($goal);
+            echo PHP_EOL;
+            print_r($goal);
+            echo PHP_EOL;
+            die();
+        }
+    }
+
+    public function loadAction()
+    {
+        if ($id = $this->request->getParam('id')) {
+            $goal = $this->mapper->load($id);
+            $goal->setData($this->request->getParams());
+            $this->mapper->update($goal);
+            echo PHP_EOL;
+            print_r($goal);
+            echo PHP_EOL;
+            die();
+        }
     }
 } 
