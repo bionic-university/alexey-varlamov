@@ -95,4 +95,13 @@ class GoalController
             die();
         }
     }
+
+    public function deleteAction()
+    {
+        if ($id = $this->request->getParam('id')) {
+            $this->mapper->delete($id);
+        } elseif ($this->request->getParam('all')) {
+            $this->mapper->delete(null, true);
+        }
+    }
 } 

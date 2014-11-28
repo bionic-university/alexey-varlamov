@@ -12,6 +12,9 @@ abstract class Mapper
      */
     protected static $PDO;
 
+    /**
+     * Instantiate PDO
+     */
     public function __construct()
     {
         if (!isset(self::$PDO)) {
@@ -27,6 +30,8 @@ abstract class Mapper
     }
 
     /**
+     * Get entity model by id
+     *
      * @param integer $id
      * @return DomainObject | \Vav\CashTarget\Model\Domain\Goal
      */
@@ -59,14 +64,43 @@ abstract class Mapper
         return $this->doCreateObject($array);
     }
 
+    /**
+     * Perform SQL insert statement
+     *
+     * @param DomainObject $obj
+     */
     public function insert(DomainObject $obj)
     {
         $this->doInsert($obj);
     }
 
+    /**
+     * Perform SQL update statement
+     *
+     * @param DomainObject $obj
+     */
     public function update(DomainObject $obj)
     {
         $this->doUpdate($obj);
+    }
+
+    /**Perform SQL delete statement
+     *
+     * @param  int  $id - id of goal which must be deleted
+     * @param  bool $isDeleteAll - delete all records or not
+     * @return bool
+     */
+    public function delete($id = null, $isDeleteAll = false)
+    {
+        if ($isDeleteAll) {
+            $this->deleteAllStmt();
+            $this->deleteAllStmt()->execute();
+        } else {
+            $this->deleteStmt()->bindParam(':id', $id, \PDO::PARAM_INT);
+            $this->deleteStmt()->execute();
+        }
+
+        return true;
     }
 
     /**
@@ -81,6 +115,8 @@ abstract class Mapper
     }
 
     /**
+     * Prepare table fields for SQL statements
+     *
      * @param DomainObject $obj
      * @return string
      */
@@ -90,6 +126,8 @@ abstract class Mapper
     }
 
     /**
+     * Prepare table values for SQL statements
+     *
      * @param DomainObject $obj
      * @return string
      */
@@ -105,9 +143,25 @@ abstract class Mapper
 
         return $values;
     }
-    
+
+    /**
+     * @return \PDOStatement
+     */
+    abstract protected function deleteStmt();
+
+    /**
+     * @return \PDOStatement
+     */
+    abstract protected function deleteAllStmt();
+
+    /**
+     * @param DomainObject $obj
+     */
     abstract protected function doUpdate(DomainObject $obj);
 
+    /**
+     * @param DomainObject $obj
+     */
     abstract protected function doInsert(DomainObject $obj);
 
     /**
@@ -116,6 +170,9 @@ abstract class Mapper
      */
     abstract protected function doCreateObject(array $array);
 
+    /**
+     * Initialize SQL statements
+     */
     abstract protected function initStatements();
 
     /**
@@ -130,7 +187,6 @@ abstract class Mapper
 
     /**
      * @param array $raw
-     * @return Collection
      */
     abstract public function createCollection(array $raw);
 }

@@ -29,24 +29,33 @@ class GoalMapper extends Mapper
      */
     private $insertStmt;
 
+    /**
+     * @var \PDOStatement;
+     */
+    private $deleteStmt;
+
+    /**
+     * @var \PDOStatement;
+     */
+    private $deleteAllStmt;
+
+    /**
+     *
+     */
     public function __construct()
     {
         parent::__construct();
     }
 
+    /**
+     * Instantiate PDOStatements
+     */
     protected function initStatements()
     {
         $this->selectStmt    = self::$PDO->prepare('SELECT * FROM goal WHERE id = :id');
         $this->selectAllStmt = self::$PDO->prepare('SELECT * FROM goal');
-//        $this->updateStmt    = self::$PDO->prepare('UPDATE goal SET name=:name, price=:price WHERE id=?');
-        /*$this->insertStmt    = self::$PDO->prepare(
-            'INSERT INTO goal (name, price, deadline, fsum, fperiod, auto)
-              VALUES(:name, :price, :deadline, :fsum, :fperiod, :auto)'
-        );*/
-        /*$this->insertStmt    = self::$PDO->prepare(
-            'INSERT INTO goal (name, price, deadline, fsum, fperiod, auto)
-              VALUES(:name, :price, :deadline, :fsum, :fperiod, :auto)'
-        );*/
+        $this->deleteStmt    = self::$PDO->prepare('DELETE FROM goal WHERE id = :id');
+        $this->deleteAllStmt = self::$PDO->prepare('DELETE FROM goal');
     }
 
     /**
@@ -58,10 +67,11 @@ class GoalMapper extends Mapper
         return new GoalCollection($raw, $this);
     }
 
+    /**
+     * @param DomainObject $obj
+     */
     protected function doUpdate(DomainObject $obj)
     {
-        $fields = $this->prepareFields($obj);
-        $values = $this->prepareValues($obj);
         $query = '';
 
         foreach ($obj as $key => $value) {
@@ -77,6 +87,9 @@ class GoalMapper extends Mapper
         $this->updateStmt->execute();
     }
 
+    /**
+     * @param DomainObject $obj
+     */
     protected function doInsert(DomainObject $obj)
     {
         if (!$obj instanceof Goal) {
@@ -86,9 +99,6 @@ class GoalMapper extends Mapper
         $fields = $this->prepareFields($obj);
         $values = $this->prepareValues($obj);
         $this->insertStmt = self::$PDO->prepare('INSERT `goal` (`' . $fields . '`) VALUES (' . $values . ')');
-        /*foreach ($obj as $k => $v) {
-            $this->insertStmt->bindParam(':'.$k, $v, \PDO::PARAM_STR);
-        }*/
 
         $this->insertStmt->execute();
         $id = self::$PDO->lastInsertId();
@@ -109,7 +119,8 @@ class GoalMapper extends Mapper
     /**
      * @return \PDOStatement
      */
-    protected function selectStmt() {
+    protected function selectStmt()
+    {
         return $this->selectStmt;
     }
 
@@ -119,5 +130,21 @@ class GoalMapper extends Mapper
     protected function selectAllStmt()
     {
         return $this->selectAllStmt;
+    }
+
+    /**
+     * @return \PDOStatement
+     */
+    protected function deleteStmt()
+    {
+        return $this->deleteStmt;
+    }
+
+    /**
+     * @return \PDOStatement
+     */
+    protected function deleteAllStmt()
+    {
+        return $this->deleteAllStmt;
     }
 }

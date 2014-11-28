@@ -27,8 +27,32 @@ abstract class Request
         return $requestType;
     }
 
+    /**
+     * Get request params
+     *
+     * @return array
+     */
     abstract public function getParams();
+
+    /**
+     * Retrieve specific parameter from request
+     *
+     * @param $name
+     * @return string
+     */
     abstract public function getParam($name);
+
+    /**
+     * Retrieve current controller
+     *
+     * @return string
+     */
     abstract public function getController();
+
+    /**
+     * Retrieve requested action
+     *
+     * @return string
+     */
     abstract public function getAction();
 }
