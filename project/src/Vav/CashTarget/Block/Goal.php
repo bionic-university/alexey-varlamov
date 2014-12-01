@@ -5,21 +5,49 @@
 
 namespace Vav\CashTarget\Block;
 
+use Vav\CashTarget\Model\Mapper\Collection;
+
 class Goal
 {
+    /**
+     * @var Collection
+     */
+    private $goal;
+
+    public function __construct()
+    {
+    }
+
     /**
      * @var string
      */
     private $header;
 
     /**
-     * @var string
+     * Include template file depending on type of action
+     *
+     * @param string $type - type of action
      */
     private $message;
 
-    public function renderView()
+    public function renderView($type = 'index')
     {
-        require dirname(__DIR__).'/template/goal/goal.phtml';
+        $template = '';
+        switch ($type) {
+            case 'index':
+            case 'get':
+            case 'save':
+                $template = '/template/goal/main.phtml';
+                break;
+            case 'report':
+                $template = '/template/goal/report.phtml';
+                break;
+            case 'optimizer':
+                $template = '/template/goal/optimizer.phtml';
+                break;
+        }
+
+        require dirname(__DIR__) . $template;
     }
 
     /**
@@ -52,5 +80,21 @@ class Goal
     public function setMessage($message)
     {
         $this->message = $message;
+    }
+
+    /**
+     * @param Collection $goal
+     */
+    public function setGoal($goal)
+    {
+        $this->goal = $goal;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getGoal()
+    {
+        return $this->goal;
     }
 } 

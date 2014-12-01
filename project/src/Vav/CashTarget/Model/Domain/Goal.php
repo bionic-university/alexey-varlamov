@@ -16,6 +16,7 @@ class Goal extends DomainObject
     public $fperiod;
     public $fsum;
     public $auto;
+    public $userId;
 
     /**
      * @return mixed
@@ -127,5 +128,21 @@ class Goal extends DomainObject
     public function setPriority($priority)
     {
         $this->priority = $priority;
+    }
+
+    /**
+     * @param int $id
+     */
+    protected function setUserId($id)
+    {
+        $this->userId = $id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getUserId()
+    {
+        return intval($this->userId);
     }
 } 

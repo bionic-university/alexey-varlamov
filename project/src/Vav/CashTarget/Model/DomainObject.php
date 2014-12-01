@@ -2,6 +2,8 @@
 
 namespace Vav\CashTarget\Model;
 
+use Vav\CashTarget\Helper\CollectionFactory;
+
 abstract class DomainObject
 {
     private $id;
@@ -27,15 +29,26 @@ abstract class DomainObject
         $this->id = $id;
     }
 
-    public static function collection($type)
+    /**
+     * Delegate creating of DomainObject collection to {@link CollectionFactory::getCollection()}
+     *
+     * @see CollectionFactory::getCollection()
+     * @param $type
+     * @return Mapper\Collection
+     */
+    private static function collection($type)
     {
-        return array();
+        return CollectionFactory::getCollection($type);
     }
 
+    /**
+     * Return collection of DomainObject depending on current class
+     *
+     * @return Mapper\Collection
+     */
     public function getCollection()
     {
-//        return self::collection(get_class($this));
-        return new \ArrayObject($this);
+        return self::collection(get_class($this));
     }
 
     /**
@@ -54,12 +67,16 @@ abstract class DomainObject
             if (is_null($value) || $value == '') {
                 continue;
             }
+            
+            $keys = explode('_', $key);
+            $keys = array_map('ucfirst', $keys);
+            $key  = implode('', $keys);
 
-            $method = 'set'.ucfirst($key);
+            $method = 'set' . $key;
             if (method_exists($this, $method)) {
                 call_user_func(array($this, $method), $value);
             } else {
-                throw new \BadMethodCallException('Method: "'.$method.'". Does not exists.');
+                throw new \BadMethodCallException('Method: "' . $method . '". Does not exists.');
             }
         }
 

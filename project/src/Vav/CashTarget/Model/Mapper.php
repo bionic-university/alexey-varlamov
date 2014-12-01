@@ -118,11 +118,24 @@ abstract class Mapper
      * Prepare table fields for SQL statements
      *
      * @param DomainObject $obj
+     * @param bool $isUpdate
      * @return string
      */
-    public function prepareFields(DomainObject $obj)
+    public function prepareFields(DomainObject $obj, $isUpdate = false)
     {
-        return implode('`, `', array_keys(get_object_vars($obj)));
+        $fields = array_keys(get_object_vars($obj));
+        foreach ($fields as &$field) {
+            $field = preg_split('/(?=[A-Z])/', $field);
+            if (is_array($field)) {
+                $field = array_map('strtolower', $field);
+                $field = implode('_', $field);
+            }
+            if ($isUpdate) {
+                $field = $field . ' = :' . $field;
+            }
+        }
+
+        return implode(',', $fields);
     }
 
     /**
@@ -133,15 +146,7 @@ abstract class Mapper
      */
     public function prepareValues(DomainObject $obj)
     {
-        $values = array_map(
-          function ($el) {
-              return '"' . $el . '"';
-          },
-          get_object_vars($obj)
-        );
-        $values = implode(',', $values);
-
-        return $values;
+        return implode(',', get_object_vars($obj));
     }
 
     /**
@@ -188,5 +193,5 @@ abstract class Mapper
     /**
      * @param array $raw
      */
-    abstract public function createCollection(array $raw);
+    abstract protected function createCollection(array $raw);
 }

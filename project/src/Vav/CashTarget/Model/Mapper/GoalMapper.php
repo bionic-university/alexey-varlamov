@@ -62,7 +62,7 @@ class GoalMapper extends Mapper
      * @param array $raw
      * @return Collection
      */
-    public function createCollection(array $raw)
+    protected function createCollection(array $raw)
     {
         return new GoalCollection($raw, $this);
     }
@@ -72,16 +72,14 @@ class GoalMapper extends Mapper
      */
     protected function doUpdate(DomainObject $obj)
     {
-        $query = '';
-
-        foreach ($obj as $key => $value) {
-            $query .= '`' . $key . '` = :' . $key . ((@end(array_keys(get_object_vars($obj))) != $key) ? ', ' : ' ');
-        }
-        $query .= 'WHERE `id` = :id';
-
+        $query  = '';
+        $fields = $this->prepareFields($obj);
+        $values = explode(',', $this->prepareValues($obj));
+        $query .= $this->prepareFields($obj, true);
+        $query .= ' WHERE id = :id';
         $this->updateStmt = self::$PDO->prepare('UPDATE `goal` SET ' . $query);
-        foreach ($obj as $k => $v) {
-            $this->updateStmt->bindValue(':' . $k, $v);
+        foreach (explode(',', $fields) as $k => $v) {
+            $this->updateStmt->bindParam(':' . $v, $values[$k]);
         }
         $this->updateStmt->bindValue(':id', $obj->getId());
         $this->updateStmt->execute();
@@ -98,8 +96,7 @@ class GoalMapper extends Mapper
 
         $fields = $this->prepareFields($obj);
         $values = $this->prepareValues($obj);
-        $this->insertStmt = self::$PDO->prepare('INSERT `goal` (`' . $fields . '`) VALUES (' . $values . ')');
-
+        $this->insertStmt = self::$PDO->prepare('INSERT `goal` (' . $fields . ') VALUES (' . $values . ')');
         $this->insertStmt->execute();
         $id = self::$PDO->lastInsertId();
         $obj->setId($id);

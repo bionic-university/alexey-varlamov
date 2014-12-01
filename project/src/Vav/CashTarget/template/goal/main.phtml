@@ -1,0 +1,15 @@
+<?php echo PHP_EOL ?>
+=== Cash Target ===
+<?php echo PHP_EOL ?>
+<?php echo $this->getMessage() . PHP_EOL ?>
+<?php if ($this->getGoal()) : ?>
+<?php foreach ($this->getGoal() as $goal): ?>
+<?php if (!$goal instanceof \Vav\CashTarget\Model\Domain\Goal) return; ?>
+<?php echo PHP_EOL ?>
+    * Cash Target name:  <?php echo $goal->getName() . PHP_EOL ?>
+    * Cash Target price: <?php echo $goal->getPrice() . PHP_EOL ?>
+<?php echo PHP_EOL ?>
+============================================================
+    <?php endforeach ?>
+<?php endif ?>
+<?php echo PHP_EOL ?>
