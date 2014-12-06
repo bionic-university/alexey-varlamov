@@ -142,11 +142,21 @@ abstract class Mapper
      * Prepare table values for SQL statements
      *
      * @param DomainObject $obj
+     * @param bool $isUpdate
      * @return string
      */
-    public function prepareValues(DomainObject $obj)
+    public function prepareValues(DomainObject $obj, $isUpdate = false)
     {
-        return implode(',', get_object_vars($obj));
+        $values = array_map(
+          function ($ind, $el) use ($isUpdate) {
+              return ($isUpdate) ? $el : '"' . $el . '"';
+          },
+          array_keys(get_object_vars($obj)),
+          array_values(get_object_vars($obj))
+        );
+        $values = implode(',', $values);
+
+        return $values;
     }
 
     /**

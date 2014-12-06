@@ -48,6 +48,7 @@ class GoalController
     public function indexAction()
     {
         $this->block->setHeader(
+
             'Welcome to the Cash Target!' . PHP_EOL .
             'Please consider our help page for app usage:' . PHP_EOL . PHP_EOL
         );
@@ -86,6 +87,24 @@ class GoalController
     public function setAction()
     {
         if (count($this->request->getParams())) {
+            if (
+                !$this->request->getParam('name') ||
+                !$this->request->getParam('price') ||
+                !(
+                    $this->request->getParam('deadline') ||
+                    $this->request->getParam('fsum') &&
+                    $this->request->getParam('fperiod')
+                )
+            ) {
+                $this->block->setMessage(
+                    'Please specify all required parameters:' . PHP_EOL .
+                    '- "name";' . PHP_EOL .
+                    '- "price";' . PHP_EOL .
+                    '- "deadline" or "fperiod" and "fsum"' . PHP_EOL
+                );
+                $this->block->renderView();
+                throw new \Exception('Specify required params.');
+            }
             $goal = new Goal();
             $goal->setData($this->request->getParams());
             $this->mapper->insert($goal);

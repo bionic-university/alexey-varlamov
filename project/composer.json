@@ -1,6 +1,16 @@
 {
+    "name": "Cash Target",
+    "description": "Define cash targets and achieve them",
+    "authors": [
+        {
+            "name": "Alexey Varlamov",
+            "email": "l.e.h.a.vav@gmail.com",
+            "role": "Creator / Main Developer"
+        }
+    ],
     "require": {
-        "symfony/console": "2.6.*@dev"
+        "symfony/console": "2.6.*@dev",
+        "filp/whoops": ">=1.1.2"
     },
     "autoload": {
         "psr-4": {

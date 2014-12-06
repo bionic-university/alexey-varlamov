@@ -38,7 +38,7 @@ class RequestHandler extends Shell
                 $current = $match[1];
 //                $this->params[$current] = true;
             } else {
-                if (preg_match('/([\w\d]+)=([\w\d]+)/i', $arg, $match)) {
+                if (preg_match('/([\w\d]+)=([\w\d-]+)/i', $arg, $match)) {
                     $this->params[$match[1]] = $match[2];
                 } elseif ($current) {
                     $this->params[$arg] = true;

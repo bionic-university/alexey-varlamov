@@ -6,6 +6,8 @@
 namespace Vav\CashTarget\Block;
 
 use Vav\CashTarget\Model\Mapper\Collection;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Helper\Table;
 
 class Goal
 {
@@ -14,14 +16,14 @@ class Goal
      */
     private $goal;
 
-    public function __construct()
-    {
-    }
-
     /**
      * @var string
      */
     private $header;
+
+    public function __construct()
+    {
+    }
 
     /**
      * Include template file depending on type of action
@@ -37,7 +39,8 @@ class Goal
             case 'index':
             case 'get':
             case 'save':
-                $template = '/template/goal/main.phtml';
+//                $template = '/template/goal/main.phtml';
+                $template = '/template/goal/dev.phtml';
                 break;
             case 'report':
                 $template = '/template/goal/report.phtml';
@@ -96,5 +99,66 @@ class Goal
     public function getGoal()
     {
         return $this->goal;
+    }
+
+    /**
+     * Show target details
+     *
+     * @param \Vav\CashTarget\Model\Domain\Goal $goal
+     * @return string $msg
+     */
+    public function getDetails(\Vav\CashTarget\Model\Domain\Goal $goal)
+    {
+        $msg = $this->getName($goal);
+        $msg .= $this->getPrice($goal);
+
+        return $msg;
+    }
+
+    /**
+     * Show target details
+     *
+     * @param \Vav\CashTarget\Model\Domain\Goal $goal
+     * @return string $msg
+     */
+    public function getPrice($goal)
+    {
+        $msg = '';
+        if ($goal->getPrice() > 0) {
+            $msg = '    * Cash Target price: ' . $goal->getPrice() . PHP_EOL;
+        }
+
+        return $msg;
+    }
+
+    /**
+     * Show target details
+     *
+     * @param \Vav\CashTarget\Model\Domain\Goal $goal
+     * @return string $msg
+     */
+    public function getName($goal)
+    {
+        $msg = '';
+        if ($goal->getName()) {
+            $msg = '    * Cash Target name: ' . $goal->getName() . PHP_EOL;
+        }
+
+        return $msg;
+    }
+
+    public function getTable($goal)
+    {
+        $output = new ConsoleOutput();
+        $table = new Table($output);
+        $table->setHeaders(array(
+            'id',
+            'name',
+            'price'
+        ));
+
+        $table->setRows($this->goal->getData());
+        $table->render();
+        
     }
 } 

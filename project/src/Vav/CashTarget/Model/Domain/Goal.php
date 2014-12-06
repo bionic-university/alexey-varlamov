@@ -16,7 +16,7 @@ class Goal extends DomainObject
     public $fperiod;
     public $fsum;
     public $auto;
-    public $userId;
+    public $userId = 1;
 
     /**
      * @return mixed

@@ -74,7 +74,7 @@ class GoalMapper extends Mapper
     {
         $query  = '';
         $fields = $this->prepareFields($obj);
-        $values = explode(',', $this->prepareValues($obj));
+        $values = explode(',', $this->prepareValues($obj, true));
         $query .= $this->prepareFields($obj, true);
         $query .= ' WHERE id = :id';
         $this->updateStmt = self::$PDO->prepare('UPDATE `goal` SET ' . $query);
