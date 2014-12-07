@@ -5,7 +5,7 @@ namespace Vav\CashTarget\Model\Mapper;
 use Vav\CashTarget\Model\DomainObject;
 use Vav\CashTarget\Model\Mapper;
 
-abstract class Collection implements \Iterator
+abstract class Collection implements \Iterator, \Countable
 {
     /**
      * @var \Vav\CashTarget\Model\Mapper
@@ -130,6 +130,11 @@ abstract class Collection implements \Iterator
     public function valid()
     {
         return (!is_null($this->current()));
+    }
+
+    public function count()
+    {
+        return $this->total;
     }
 
     /**

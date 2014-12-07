@@ -155,6 +155,7 @@ abstract class Mapper
           array_values(get_object_vars($obj))
         );
         $values = implode(',', $values);
+        $values = str_replace('""', 'null', $values);
 
         return $values;
     }

@@ -73,10 +73,18 @@ class GoalController
             $goals = $this->mapper->getCollection();
         }
 
-        if (!is_null($goals)) {
+        if ($goals->count() > 0) {
             $this->block->setGoal($goals);
-            $this->block->renderView();
+            $type = 'get';
+        } else {
+            $this->block->setMessage(
+                'You do not define any targets yet. Please consider our help to create a new target.' . PHP_EOL .
+                $this->request->showHelp()
+            );
+            $type = 'empty';
         }
+
+        $this->block->renderView($type);
     }
 
     /**
@@ -102,7 +110,7 @@ class GoalController
                     '- "price";' . PHP_EOL .
                     '- "deadline" or "fperiod" and "fsum"' . PHP_EOL
                 );
-                $this->block->renderView();
+                $this->block->renderView('empty');
                 throw new \Exception('Specify required params.');
             }
             $goal = new Goal();
@@ -111,7 +119,8 @@ class GoalController
             $this->block->setMessage(
                 'The target "' . $goal->getName() . '" was successfully created.'
             );
-            $this->block->renderView();
+
+            $this->block->renderView('save');
         }
     }
 
@@ -124,14 +133,60 @@ class GoalController
     {
         if ($id = $this->request->getParam('id')) {
             $goal = $this->mapper->load($id);
-            $goal->setData($this->request->getParams());
-            $this->mapper->update($goal);
-            $goals = $goal->getCollection();
-            $goals->add($goal);
-            $this->block->setGoal($goals);
-            $this->block->setMessage('The target was successfully updated.');
-            $this->block->renderView();
+
+            if (!is_null($goal)) {
+                $data = $this->request->getParams();
+                if (
+                    $funds = $this->request->getParam('addFunds') &&
+                    $goal->getPaidSum() < $goal->getPrice()
+                ) {
+                    $funds = filter_var($funds, FILTER_SANITIZE_NUMBER_FLOAT);
+                    $goal->setPaidSum($goal->getPaidSum() + $funds);
+
+                    if ($goal->getPrice() < $goal->getPaidSum()) {
+                        $goal->setPaidSum($goal->getPrice());
+                        $this->block->setOverpaying($goal->getPaidSum() - $goal->getPrice());
+                    }
+                    unset($data['addFunds']);
+                }
+
+                $goal->setData($data);
+                $this->mapper->update($goal);
+                $goals = $goal->getCollection();
+                $goals->add($goal);
+                $this->block->setGoal($goals);
+                $this->block->setMessage('The target was successfully updated.');
+                $type = 'index';
+            } else {
+                $this->block->setMessage(
+                    'You do not have such target. ' . PHP_EOL .
+                    'Please use the command "php path_to_script/index.php -get all" - to see a list of existing targets.' .
+                    PHP_EOL . 'Or create new target if you do not have any target yet.'
+                );
+                $type = 'empty';
+            }
+            $this->block->renderView($type);
         }
+    }
+
+    public function tacticAction()
+    {
+        if (!$this->request->getParam('id')) {
+            throw new \HttpInvalidParamException('The param "id" is required.');
+        }
+        $goal = $this->mapper->load($this->request->getParam('id'));
+
+        if (is_null($goal)) {
+            $msg = 'Target with id: ' . $this->request->getParam('id') . ' does not exists.';
+            throw new \BadMethodCallException($msg);
+        }
+
+        $goals = $goal->getCollection();
+        $goals->add($goal);
+        $this->block->setGoal($goals);
+        $this->block->setIsShowTactic(true);
+        $this->block->setHeader(' ===  Cash Target Tactics === ');
+        $this->block->renderView();
     }
 
     /**
@@ -146,6 +201,6 @@ class GoalController
             $this->mapper->delete(null, true);
             $this->block->setMessage('The targets were deleted.');
         }
-        $this->block->renderView();
+        $this->block->renderView('delete');
     }
 } 

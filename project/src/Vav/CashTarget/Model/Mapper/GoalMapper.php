@@ -79,7 +79,7 @@ class GoalMapper extends Mapper
         $query .= ' WHERE id = :id';
         $this->updateStmt = self::$PDO->prepare('UPDATE `goal` SET ' . $query);
         foreach (explode(',', $fields) as $k => $v) {
-            $this->updateStmt->bindParam(':' . $v, $values[$k]);
+            $this->updateStmt->bindValue(':' . $v, $values[$k]);
         }
         $this->updateStmt->bindValue(':id', $obj->getId());
         $this->updateStmt->execute();

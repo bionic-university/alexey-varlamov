@@ -5,9 +5,14 @@
 
 namespace Vav\CashTarget\Block;
 
+use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Helper\TableSeparator;
+use Symfony\Component\Console\Helper\TableStyle;
+use Vav\CashTarget\Model\DomainObject;
 use Vav\CashTarget\Model\Mapper\Collection;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Helper\Table;
+use Vav\CashTarget\Model\Domain\Goal as DomainGoal;
 
 class Goal
 {
@@ -19,10 +24,50 @@ class Goal
     /**
      * @var string
      */
-    private $header;
+    private $header = '=== Welcome to Cash Targets ===';
+
+    /**
+     * @var ConsoleOutput
+     */
+    private $output;
+
+    /**
+     * @var int
+     */
+    private $overpaying = 0;
+
+    /**
+     * @var bool
+     */
+    private $isShowTactic = false;
 
     public function __construct()
     {
+        $this->output = new ConsoleOutput();
+    }
+
+    /**
+     * @param bool $isShowTactic
+     */
+    public function setIsShowTactic($isShowTactic)
+    {
+        $this->isShowTactic = $isShowTactic;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOverpaying()
+    {
+        return $this->overpaying;
+    }
+
+    /**
+     * @param int $overpaying
+     */
+    public function setOverpaying($overpaying)
+    {
+        $this->overpaying = $overpaying;
     }
 
     /**
@@ -38,19 +83,26 @@ class Goal
         switch ($type) {
             case 'index':
             case 'get':
-            case 'save':
 //                $template = '/template/goal/main.phtml';
-                $template = '/template/goal/dev.phtml';
+                $template = 'dev.phtml';
                 break;
             case 'report':
-                $template = '/template/goal/report.phtml';
+                $template = 'report.phtml';
                 break;
             case 'optimizer':
-                $template = '/template/goal/optimizer.phtml';
+                $template = 'optimizer.phtml';
+                break;
+            case 'delete':
+                $template = 'deleted.php';
+                break;
+            case 'empty':
+            case 'save':
+                $template = 'empty.php';
                 break;
         }
 
-        require dirname(__DIR__) . $template;
+        echo exec('clear');
+        require dirname(__DIR__) . '/template/goal/' . $template;
     }
 
     /**
@@ -116,49 +168,219 @@ class Goal
     }
 
     /**
-     * Show target details
-     *
-     * @param \Vav\CashTarget\Model\Domain\Goal $goal
-     * @return string $msg
+     * Render table of cash targets
      */
-    public function getPrice($goal)
+    public function showTable()
     {
-        $msg = '';
-        if ($goal->getPrice() > 0) {
-            $msg = '    * Cash Target price: ' . $goal->getPrice() . PHP_EOL;
+        $table  = new Table($this->output);
+        $style  = new TableStyle();
+
+        $style->setHorizontalBorderChar('=')
+            ->setVerticalBorderChar(' ')
+            ->setCrossingChar(':')
+            ->setPaddingChar(' ')
+            ->setPadType(2);
+
+        $table->setHeaders(array(
+            'Id',
+            'Name',
+            'Price',
+            'Paid sum',
+            'Priority',
+            'Deadline',
+            'Incoming sum',
+            'Incoming period',
+            'Funding'
+        ));
+
+        $rows = [];
+        foreach ($this->getGoal() as $goal) {
+            /** @var DomainGoal $goal **/
+            $rows[] = [
+                $goal->getId(),
+                $goal->getName(),
+                '$' . $this->formatPrice($goal->getPrice()),
+                '$' . $this->formatPrice($goal->getPaidSum()),
+                (!is_null($goal->getPriority()) && $goal->getPriority() > 0) ? $goal->getPriority() : '- || -',
+                (!is_null($goal->getDeadline()) && $goal->getDeadline() > 0) ? $goal->getDeadline() : '- || -',
+                (!is_null($goal->getFSum()) && $goal->getFSum() > 0) ? $goal->getFSum() : '- || -',
+                (!is_null($goal->getFPeriod())) ? $goal->getFPeriod() : '- || -',
+                ((int)$goal->getAuto() === 1) ? 'Auto' : 'Manual'
+            ];
+        }
+        $table->setRows($rows);
+
+        $table->setStyle($style);
+        $table->render();
+    }
+
+    public function showProgressBar()
+    {
+        $amount = 0;
+        $paid   = 0;
+        /*$msg    = '';
+        $remain = '';*/
+
+        foreach ($this->getGoal() as $goal) {
+            /** @var DomainGoal $goal **/
+            $amount += $goal->getPrice();
+            $paid   += $goal->getPaidSum();
+        }
+        $result = $this->normalize($amount, $paid);
+
+        if ($this->getGoal()->count() > 1) {
+            $msg = 'Progress of achieving all cash targets:';
+            $remain  = 'The remaining amount for accomplishing the targets is $';
+            $remain .= $this->formatPrice($amount - $paid);
+        } else {
+            $this->getGoal()->rewind();
+            $remain  = 'The remaining amount for accomplishing the target "';
+            $remain .= $this->getGoal()->current()->getName() . '" is $' . $this->formatPrice($amount - $paid);
+            $msg = 'Progress of achieving the target "' . $this->getGoal()->current()->getName() . '":';
         }
 
-        return $msg;
+        $progressBar = new ProgressBar($this->output, 100);
+        $progressBar->setProgress($result);
+        $progressBar->setMessage($msg);
+        $progressBar->setBarWidth(50);
+
+        $progressBar->setFormat(
+            ' %message%'. str_repeat(PHP_EOL, 2) .
+            ' $' . $this->formatPrice($paid) . '/$' . $this->formatPrice($amount) .
+            ' [%bar%] %percent%%' . str_repeat(PHP_EOL, 2) .
+            ' ' . $remain
+        );
+
+
+        $progressBar->display();
     }
 
     /**
-     * Show target details
+     * Calculate the date of reaching a target
      *
-     * @param \Vav\CashTarget\Model\Domain\Goal $goal
-     * @return string $msg
+     * @return string
+     * @throws \Exception
      */
-    public function getName($goal)
+    public function showFinishedDate()
     {
-        $msg = '';
-        if ($goal->getName()) {
-            $msg = '    * Cash Target name: ' . $goal->getName() . PHP_EOL;
+        $finishedDate = 0;
+        $seconds = 0;
+        $goal = $this->getGoal()->current();
+        if (!$goal instanceof DomainGoal) {
+            throw new \Exception('The object should be instance of the class "DomainObject\\Goal"');
         }
 
-        return $msg;
-    }
-
-    public function getTable($goal)
-    {
-        $output = new ConsoleOutput();
-        $table = new Table($output);
-        $table->setHeaders(array(
-            'id',
-            'name',
-            'price'
-        ));
-
-        $table->setRows($this->goal->getData());
-        $table->render();
+        $date = $goal->getCreatedDate();
+        if (!is_null($goal->getDeadline())) {
+            $digit = filter_var($goal->getDeadline(), FILTER_SANITIZE_NUMBER_INT);
+            switch (substr($goal->getDeadline(), -1, 1)) {
+                case 'd':
+                    $seconds = $digit * 24 * 60 * 60;
+                    break;
+                case 'm':
+                    $seconds = $digit * 30 * 24 * 60 * 60;
+                    break;
+                case 'y':
+                    $seconds = $digit * 365 * 24 * 60 * 60;
+                    break;
+            }
+            $finishedDate = date('m/d/Y', strtotime($date) + $seconds);
+        }
         
+        return ' The target: "' . $goal->getName() . '" will be reached ' . $finishedDate;
     }
-} 
+
+    /**
+     * Show tactic or not
+     *
+     * @return bool
+     */
+    public function isShowTactic()
+    {
+        return $this->isShowTactic;
+    }
+
+    /**
+     * Show possible tactics of achieving the targets
+     */
+    public function showTactic()
+    {
+        $table   = new Table($this->output);
+        $periods = ['day', 'month', 'year'];
+        /** @var DomainGoal $goal **/
+        $goal    = $this->getGoal()->current();
+
+        $table->setHeaders([
+            '#',
+            'Period',
+            'The amount of payment for the period',
+            'QTY of the required payments'
+        ]);
+
+        foreach ($periods as $i => $period) {
+//            $amount = 23;
+            $remainedSum = $goal->getPrice() - $goal->getPaidSum();
+            $periodQty = filter_var($goal->getDeadline(), FILTER_SANITIZE_NUMBER_INT);
+            $qty = [];
+            $result = [];
+            switch (substr($goal->getDeadline(), -1, 1)) {
+                case 'd':
+                    $result = [$remainedSum / $periodQty, '- || -', '- || -'];
+                    $qty    = [$periodQty, 1, 1];
+                    break;
+                case 'm':
+                    $result = [$remainedSum / ($periodQty * 30 ), $remainedSum / $periodQty, '- || -'];
+                    $qty    = [$periodQty * 30, $periodQty, 1];
+                    break;
+                case 'y':
+                    $result = [$remainedSum / ($periodQty * 365 ), $remainedSum / ($periodQty * 12), $remainedSum / $periodQty];
+                    $qty    = [$periodQty * 365, $periodQty * 12, $periodQty];
+                    break;
+            }
+            $result = array_map(
+                function ($el) {
+                    return $this->formatPrice($el);
+                },
+                $result
+            );
+
+            $table->addRow([
+                $i + 1,
+                'Each ' . $period,
+                '$' . $result[$i],
+                $qty[$i]
+            ]);
+        }
+        echo str_repeat(PHP_EOL, 2);
+        $table->render();
+    }
+
+    /**
+     * Format price to: 50,000.00
+     *
+     * @param float $price
+     * @return float
+     */
+    public function formatPrice($price)
+    {
+        return number_format($price, 2, ',', '.');
+    }
+
+    /**
+     * Convert number to percent
+     *
+     * @param float $amount
+     * @param float $paid
+     * @return int
+     */
+    public function normalize($amount, $paid)
+    {
+        $result = 0;
+        if ($paid > 0) {
+            $result = ($paid * 100) / $amount;
+            $result = round($result);
+        }
+
+        return $result;
+    }
+}

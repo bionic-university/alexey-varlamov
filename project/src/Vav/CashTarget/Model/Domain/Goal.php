@@ -17,6 +17,40 @@ class Goal extends DomainObject
     public $fsum;
     public $auto;
     public $userId = 1;
+    public $paidSum = 0;
+    public $createdDate;
+
+    /**
+     * @param mixed $createdDate
+     */
+    public function setCreatedDate($createdDate)
+    {
+        $this->createdDate = $createdDate;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCreatedDate()
+    {
+        return $this->createdDate;
+    }
+
+    /**
+     * @return float
+     */
+    public function getPaidSum()
+    {
+        return $this->paidSum;
+    }
+
+    /**
+     * @param float $paidSum
+     */
+    public function setPaidSum($paidSum)
+    {
+        $this->paidSum = $paidSum;
+    }
 
     /**
      * @return mixed
@@ -37,7 +71,7 @@ class Goal extends DomainObject
     /**
      * @return mixed
      */
-    public function getFPeriod()
+    public function getFperiod()
     {
         return $this->fperiod;
     }
@@ -45,7 +79,7 @@ class Goal extends DomainObject
     /**
      * @param mixed $fperiod
      */
-    public function setFPeriod($fperiod)
+    public function setFperiod($fperiod)
     {
         $this->fperiod = $fperiod;
     }
@@ -53,7 +87,7 @@ class Goal extends DomainObject
     /**
      * @return mixed
      */
-    public function getFSum()
+    public function getFsum()
     {
         return $this->fsum;
     }
@@ -61,7 +95,7 @@ class Goal extends DomainObject
     /**
      * @param mixed $fsum
      */
-    public function setFSum($fsum)
+    public function setFsum($fsum)
     {
         $this->fsum = $fsum;
     }
