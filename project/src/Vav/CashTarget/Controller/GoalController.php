@@ -12,6 +12,7 @@ use Vav\Core\Routing\Request;
 use Vav\CashTarget\Block\Goal as GoalView;
 use Vav\CashTarget\Model\Mapper\GoalMapper;
 use Vav\CashTarget\Model\Domain\Goal;
+use Vav\CashTarget\Helper\QuestionHandler;
 
 class GoalController
 {
@@ -31,15 +32,21 @@ class GoalController
     private $block;
 
     /**
+     * @var QuestionHandler
+     */
+    private $questionHandler;
+
+    /**
      * Setting up of the predefined classes
      *
      * @param Request $request
      */
     public function __construct(Request $request = null)
     {
-        $this->request  = $request;
-        $this->block    = new GoalView();
-        $this->mapper   = new GoalMapper();
+        $this->request = $request;
+        $this->block   = new GoalView();
+        $this->mapper  = new GoalMapper();
+        $this->questionHandler = new QuestionHandler();
     }
 
     /**
@@ -65,6 +72,7 @@ class GoalController
     public function getAction()
     {
         $goals = null;
+
         if ($id = $this->request->getParam('id')) {
             $goal = $this->mapper->load($id);
             $goals = $goal->getCollection();
@@ -73,17 +81,16 @@ class GoalController
             $goals = $this->mapper->getCollection();
         }
 
-        if ($goals->count() > 0) {
-            $this->block->setGoal($goals);
-            $type = 'get';
-        } else {
+        if (is_null($goals)) {
             $this->block->setMessage(
-                'You do not define any targets yet. Please consider our help to create a new target.' . PHP_EOL .
+                'You do not define any targets yet. Please consider our help or create a new target.' . PHP_EOL .
                 $this->request->showHelp()
             );
             $type = 'empty';
+        } elseif ($goals->count() > 0) {
+            $this->block->setGoal($goals);
+            $type = 'get';
         }
-
         $this->block->renderView($type);
     }
 
@@ -94,6 +101,8 @@ class GoalController
      */
     public function setAction()
     {
+        $required = ['name', 'price', 'deadline'];
+        $response = [];
         if (count($this->request->getParams())) {
             if (
                 !$this->request->getParam('name') ||
@@ -104,6 +113,16 @@ class GoalController
                     $this->request->getParam('fperiod')
                 )
             ) {
+                foreach ($required as $arg) {
+                    $this->questionHandler->setQuestion('Set target ' . $arg . ':' . PHP_EOL);
+                    $response[$arg] = $this->questionHandler->ask();
+                }
+
+                echo PHP_EOL;
+                print_r($response);
+                echo PHP_EOL;
+                die();
+
                 $this->block->setMessage(
                     'Please specify all required parameters:' . PHP_EOL .
                     '- "name";' . PHP_EOL .

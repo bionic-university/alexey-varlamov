@@ -6,7 +6,6 @@
 namespace Vav\CashTarget\Block;
 
 use Symfony\Component\Console\Helper\ProgressBar;
-use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Helper\TableStyle;
 use Vav\CashTarget\Model\DomainObject;
 use Vav\CashTarget\Model\Mapper\Collection;
@@ -81,7 +80,6 @@ class Goal
     {
         $template = '';
         switch ($type) {
-            case 'index':
             case 'get':
 //                $template = '/template/goal/main.phtml';
                 $template = 'dev.phtml';
@@ -95,6 +93,7 @@ class Goal
             case 'delete':
                 $template = 'deleted.php';
                 break;
+            case 'index':
             case 'empty':
             case 'save':
                 $template = 'empty.php';
@@ -325,11 +324,14 @@ class Goal
             $result = [];
             switch (substr($goal->getDeadline(), -1, 1)) {
                 case 'd':
-                    $result = [$remainedSum / $periodQty, '- || -', '- || -'];
+                    $months = ($periodQty > 30) ? $periodQty / 30 : 1;
+                    $years  = ($periodQty > 365) ? $periodQty / 365 : 1;
+                    $result = [$remainedSum / $periodQty, $months, $years];
                     $qty    = [$periodQty, 1, 1];
                     break;
                 case 'm':
-                    $result = [$remainedSum / ($periodQty * 30 ), $remainedSum / $periodQty, '- || -'];
+                    $years  = ($periodQty > 12) ? $periodQty / 12 : 1;
+                    $result = [$remainedSum / ($periodQty * 30 ), $remainedSum / $periodQty, $years];
                     $qty    = [$periodQty * 30, $periodQty, 1];
                     break;
                 case 'y':
