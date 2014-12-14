@@ -1,6 +1,8 @@
 <?php echo PHP_EOL ?>
-=== Cash Target ===
-<?php echo $this->getHeader()?>
+<?php
+echo str_repeat(' ', 200);
+$this->output->writeln($this->getHeader());
+echo str_repeat(PHP_EOL, 3);?>
 <?php echo PHP_EOL ?>
 <?php echo $this->getMessage() . PHP_EOL ?>
 <?php if ($this->getGoal()) : ?>
