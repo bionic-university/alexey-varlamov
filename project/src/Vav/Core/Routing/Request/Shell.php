@@ -60,6 +60,17 @@ abstract class Shell extends Request
     }
 
     /**
+     * Define new param
+     *
+     * @param string $name
+     * @param string $value
+     */
+    public function setParam($name, $value)
+    {
+        $this->params[$name] = $value;
+    }
+
+    /**
      * @return array - input params
      */
     public function getParams()

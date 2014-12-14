@@ -34,7 +34,12 @@ class QuestionHandler
     /**
      * @var string - question
      */
-    private $question;
+    private $question = null;
+
+    /**
+     * @var string
+     */
+    private $attention = null;
 
     public function __construct()
     {
@@ -59,22 +64,42 @@ class QuestionHandler
         $this->question = $question;
     }
 
+    /**
+     * @param string $attention
+     */
+    public function setAttention($attention)
+    {
+        $this->attention = $attention;
+    }
+
     public function ask()
     {
         return $this->questionHelper->ask(
             $this->input,
             $this->output,
-            new Question($this->getQuestion())
+            new Question($this->getMessage())
         );
     }
 
     public function askToConfirm()
     {
-
+        return $this->questionHelper->ask(
+            $this->input,
+            $this->output,
+            new ConfirmationQuestion($this->getMessage(), true)
+        );
     }
 
     public function askToChoose()
     {
 
+    }
+
+    private function getMessage()
+    {
+        $message = (!is_null($this->attention)) ? $this->attention . PHP_EOL : '';
+        $message .= PHP_EOL . $this->question;
+
+        return $message;
     }
 } 

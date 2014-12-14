@@ -4,6 +4,7 @@ namespace Vav\CashTarget\Model;
 
 use Vav\CashTarget\Vav;
 use Vav\CashTarget\Model\Mapper\Collection;
+use Vav\Core\Connector\PdoConnector;
 
 abstract class Mapper
 {
@@ -18,13 +19,8 @@ abstract class Mapper
     public function __construct()
     {
         if (!isset(self::$PDO)) {
-            try {
-                self::$PDO = new \PDO(DSN, USER, PWD);
-                self::$PDO->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-                self::$PDO->exec('SET NAMES utf8');
-            } catch (\PDOException $e) {
-                Vav::log('Error: ' . $e->getMessage());
-            }
+            self::$PDO = PdoConnector::getConnector();
+            self::$PDO->query('use ' . DB_NAME);
         }
         $this->initStatements();
     }

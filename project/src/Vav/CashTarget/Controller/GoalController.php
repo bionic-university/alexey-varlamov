@@ -13,9 +13,32 @@ use Vav\CashTarget\Block\Goal as GoalView;
 use Vav\CashTarget\Model\Mapper\GoalMapper;
 use Vav\CashTarget\Model\Domain\Goal;
 use Vav\CashTarget\Helper\QuestionHandler;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 class GoalController
 {
+    /**
+     * Required fields
+     *
+     * @var array
+     */
+    private $requiredFields = [
+        'name',
+        'price',
+        'deadline',
+        /*[
+            'fperiod',
+            'fprice'
+        ]*/
+    ];
+
+    /**
+     * Missed fields
+     *
+     * @var array
+     */
+    private $missed = [];
+
     /**
      * @var Request;
      */
@@ -47,6 +70,7 @@ class GoalController
         $this->block   = new GoalView();
         $this->mapper  = new GoalMapper();
         $this->questionHandler = new QuestionHandler();
+        $this->output = new ConsoleOutput();
     }
 
     /**
@@ -101,46 +125,45 @@ class GoalController
      */
     public function setAction()
     {
-        $required = ['name', 'price', 'deadline'];
-        $response = [];
-        if (count($this->request->getParams())) {
-            if (
-                !$this->request->getParam('name') ||
-                !$this->request->getParam('price') ||
-                !(
-                    $this->request->getParam('deadline') ||
-                    $this->request->getParam('fsum') &&
-                    $this->request->getParam('fperiod')
-                )
-            ) {
-                foreach ($required as $arg) {
-                    $this->questionHandler->setQuestion('Set target ' . $arg . ':' . PHP_EOL);
-                    $response[$arg] = $this->questionHandler->ask();
-                }
-
-                echo PHP_EOL;
-                print_r($response);
-                echo PHP_EOL;
-                die();
-
-                $this->block->setMessage(
-                    'Please specify all required parameters:' . PHP_EOL .
-                    '- "name";' . PHP_EOL .
-                    '- "price";' . PHP_EOL .
-                    '- "deadline" or "fperiod" and "fsum"' . PHP_EOL
-                );
-                $this->block->renderView('empty');
-                throw new \Exception('Specify required params.');
+        $msg = '';
+        foreach ($this->requiredFields as $param) {
+            if (!array_key_exists($param, $this->request->getParams())) {
+                array_push($this->missed, $param);
             }
-            $goal = new Goal();
-            $goal->setData($this->request->getParams());
-            $this->mapper->insert($goal);
-            $this->block->setMessage(
-                'The target "' . $goal->getName() . '" was successfully created.'
-            );
-
-            $this->block->renderView('save');
         }
+
+        if (count($this->missed) > 0) {
+            $msg = 'You have not set the target\'s "' . implode(', ', $this->missed) . '".';
+            $msg .= ' These params are required, do you want to continue and set them?(Y/n)';
+            $this->questionHandler->setQuestion($msg);
+            $msg = '';
+            $confirmation = $this->questionHandler->askToConfirm();
+            if ($confirmation) {
+                $empty = [];
+                foreach ($this->missed as $param) {
+                    $this->questionHandler->setQuestion('Set target ' . $param . ':' . PHP_EOL);
+                    $response = $this->questionHandler->ask();
+                    $this->request->setParam($param, $response);
+                    if (is_null($response)) {
+                        $empty[] = $param;
+                    }
+                }
+                if (count($empty) > 0) {
+                    $msg = 'You have not set the target\'s "' . implode(', ', $empty) . '".' . PHP_EOL;
+                    $msg .= 'You can change target options at any time using the method "--load", e.g. "--load id=4 name=notebook price=20000"';
+                    $this->block->setMessage($msg);
+                    $this->block->renderView('empty');
+                }
+            }
+        }
+
+        $goal = new Goal();
+        $goal->setData($this->request->getParams());
+        $this->mapper->insert($goal);
+        $msg = 'The target "' . $goal->getName() . '" was successfully created.' . PHP_EOL . $msg;
+        $this->block->setMessage($msg);
+
+        $this->block->renderView('save');
     }
 
     /**
@@ -173,6 +196,7 @@ class GoalController
                 $this->mapper->update($goal);
                 $goals = $goal->getCollection();
                 $goals->add($goal);
+
                 $this->block->setGoal($goals);
                 $this->block->setMessage('The target was successfully updated.');
                 $type = 'index';
@@ -205,7 +229,7 @@ class GoalController
         $this->block->setGoal($goals);
         $this->block->setIsShowTactic(true);
         $this->block->setHeader(' ===  Cash Target Tactics === ');
-        $this->block->renderView();
+        $this->block->renderView('tactic');
     }
 
     /**

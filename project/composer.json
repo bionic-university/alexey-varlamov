@@ -17,5 +17,8 @@
             "Symfony\\": "vendor/symfony/console/Symfony",
             "Psr\\": "src/Psr-4/"
         }
+    },
+    "scripts": {
+        "post-package-install": "\\Vav\\Core\\SQL\\Install::prepareFoundation"
     }
 }

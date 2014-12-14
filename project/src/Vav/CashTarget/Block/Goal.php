@@ -81,8 +81,9 @@ class Goal
         $template = '';
         switch ($type) {
             case 'get':
-//                $template = '/template/goal/main.phtml';
+            case 'tactic':
                 $template = 'dev.phtml';
+//                $template = '/template/goal/main.phtml';
                 break;
             case 'report':
                 $template = 'report.phtml';
@@ -317,25 +318,36 @@ class Goal
         ]);
 
         foreach ($periods as $i => $period) {
-//            $amount = 23;
             $remainedSum = $goal->getPrice() - $goal->getPaidSum();
             $periodQty = filter_var($goal->getDeadline(), FILTER_SANITIZE_NUMBER_INT);
             $qty = [];
             $result = [];
             switch (substr($goal->getDeadline(), -1, 1)) {
                 case 'd':
-                    $months = ($periodQty > 30) ? $periodQty / 30 : 1;
-                    $years  = ($periodQty > 365) ? $periodQty / 365 : 1;
-                    $result = [$remainedSum / $periodQty, $months, $years];
-                    $qty    = [$periodQty, 1, 1];
+                    $months = ($periodQty > 30) ? ceil($periodQty / 30) : 1;
+                    $years  = ($periodQty > 365) ? ceil($periodQty / 365) : 1;
+                    $result = [
+                        $remainedSum / $periodQty,
+                        ($months > 1) ? $remainedSum / $months : $remainedSum,
+                        ($years > 1)  ? $remainedSum / $years  : $remainedSum
+                    ];
+                    $qty    = [$periodQty, $months, $years];
                     break;
                 case 'm':
-                    $years  = ($periodQty > 12) ? $periodQty / 12 : 1;
-                    $result = [$remainedSum / ($periodQty * 30 ), $remainedSum / $periodQty, $years];
-                    $qty    = [$periodQty * 30, $periodQty, 1];
+                    $years  = ($periodQty > 12) ? ceil($periodQty / 12) : 1;
+                    $result = [
+                        $remainedSum / ($periodQty * 30 ),
+                        $remainedSum / $periodQty,
+                        ($years > 1)  ? $remainedSum / $years  : $remainedSum
+                    ];
+                    $qty    = [$periodQty * 30, $periodQty, $years];
                     break;
                 case 'y':
-                    $result = [$remainedSum / ($periodQty * 365 ), $remainedSum / ($periodQty * 12), $remainedSum / $periodQty];
+                    $result = [
+                        $remainedSum / ($periodQty * 365 ),
+                        $remainedSum / ($periodQty * 12),
+                        $remainedSum / $periodQty
+                    ];
                     $qty    = [$periodQty * 365, $periodQty * 12, $periodQty];
                     break;
             }

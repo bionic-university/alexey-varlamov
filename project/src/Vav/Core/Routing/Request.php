@@ -43,6 +43,14 @@ abstract class Request
     abstract public function getParam($name);
 
     /**
+     * Set param - value
+     *
+     * @param string $name
+     * @param string $value
+     */
+    abstract public function setParam($name, $value);
+
+    /**
      * Retrieve current controller
      *
      * @return string
