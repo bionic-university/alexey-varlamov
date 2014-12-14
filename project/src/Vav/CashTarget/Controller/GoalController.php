@@ -246,4 +246,15 @@ class GoalController
         }
         $this->block->renderView('delete');
     }
+
+    public function cronAction()
+    {
+        $goals = $this->mapper->getCollection();
+        foreach ($goals as $goal) {
+            /** @var Goal $goal **/
+            if ((int) $goal->getAuto() === 1) {
+                $this->output->writeln('--success--');
+            }
+        }
+    }
 } 

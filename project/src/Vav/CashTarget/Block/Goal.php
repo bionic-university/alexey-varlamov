@@ -7,6 +7,7 @@ namespace Vav\CashTarget\Block;
 
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\TableStyle;
+use Symfony\Component\Console\Helper\FormatterHelper;
 use Vav\CashTarget\Model\DomainObject;
 use Vav\CashTarget\Model\Mapper\Collection;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -40,9 +41,15 @@ class Goal
      */
     private $isShowTactic = false;
 
+    /**
+     * @var FormatterHelper
+     */
+    private $formatter;
+
     public function __construct()
     {
         $this->output = new ConsoleOutput();
+        $this->formatter = new FormatterHelper();
     }
 
     /**
@@ -110,7 +117,8 @@ class Goal
      */
     public function getHeader()
     {
-        return $this->header;
+        $formatedString = $this->formatter->formatBlock($this->header, 'bg=green;fg=white;options=bold');
+        return $formatedString;
     }
 
     /**
@@ -318,7 +326,7 @@ class Goal
         ]);
 
         foreach ($periods as $i => $period) {
-            $remainedSum = $goal->getPrice() - $goal->getPaidSum();
+            $remainedSum = $goal->getPrice()/* - $goal->getPaidSum()*/;
             $periodQty = filter_var($goal->getDeadline(), FILTER_SANITIZE_NUMBER_INT);
             $qty = [];
             $result = [];

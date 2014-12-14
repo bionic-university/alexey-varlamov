@@ -1,6 +1,7 @@
 <?php
 echo str_repeat(PHP_EOL, 2);
-echo str_repeat(' ', 200) . $this->getHeader();
+echo str_repeat(' ', 200);
+$this->output->writeln($this->getHeader());
 echo str_repeat(PHP_EOL, 3);
 $this->showTable();
 echo str_repeat(PHP_EOL, 5);
@@ -8,10 +9,10 @@ $this->showProgressBar();
 echo str_repeat(PHP_EOL, 2);
 if ($this->getGoal()->count() === 1) {
     echo $this->showFinishedDate();
-    if (!$this->getGoal()->current()->getFperiod() && !$this->getGoal()->current()->getFsum()) {
+//    if (!$this->getGoal()->current()->getFperiod() && $this->getGoal()->current()->getFsum() <= 0) {
         if ($this->isShowTactic()) {
             echo $this->showTactic();
         }
-    }
+//    }
 }
 echo str_repeat(PHP_EOL, 5);
