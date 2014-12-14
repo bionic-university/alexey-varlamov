@@ -5,8 +5,6 @@
 
 namespace Vav\Core\SQL;
 
-use Vav\Core\Connector\PdoConnector;
-
 class Install
 {
     /**
@@ -14,7 +12,11 @@ class Install
      */
     private static $PDO;
 
-    private $createGoal = "
+    /**
+     * SQL query. Create table `goal`
+     * @var string
+     */
+    private static $createGoal = "
         DROP TABLE IF EXISTS `goal`;
         /*!40101 SET @saved_cs_client     = @@character_set_client */;
         /*!40101 SET character_set_client = utf8 */;
@@ -37,7 +39,11 @@ class Install
         /*!40101 SET character_set_client = @saved_cs_client */;
     ";
 
-    private $createUser = "
+    /**
+     * SQL query. Create table `user`
+     * @var string
+     */
+    private static $createUser = "
         DROP TABLE IF EXISTS `user`;
         /*!40101 SET @saved_cs_client     = @@character_set_client */;
         /*!40101 SET character_set_client = utf8 */;
@@ -60,29 +66,28 @@ class Install
     ";
 
     /**
-     * Instantiate PDO
+     * @param object $event
      */
-    public function __construct()
+    public static function prepareFoundation($event)
     {
-        if (!isset(self::$PDO)) {
-            self::$PDO = PdoConnector::getConnector();
+        self::$PDO = new \PDO('mysql:host=127.0.0.1;charset:utf8', 'root', 'astral');
+        self::$PDO->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT);
+        self::$PDO->exec('SET NAMES utf8');
+        if (!self::$PDO->query('USE `cash_target`')) {
+            $event->getIO()->write('Create DB.');
+            self::$PDO->query('CREATE DATABASE `cash_target`');
+            self::$PDO->exec('USE `cash_target`');
+            self::createTables();
         }
+        $event->getIO()->write('Foundation is prepared.');
     }
 
-    public function prepareFoundation($event)
+    /**
+     * Create tables
+     */
+    private static function createTables()
     {
-        echo PHP_EOL;
-        print_r($event);
-        echo PHP_EOL;
-        die();
-        self::$PDO->query('CREATE DATABASE IF NOT EXISTS ' . DB_NAME);
-        self::$PDO->query('USE ' . DB_NAME);
-        $this->createTables();
-    }
-
-    public function createTables()
-    {
-        self::$PDO->exec($this->createUser);
-        self::$PDO->exec($this->createGoal);
+        self::$PDO->exec(self::$createUser);
+        self::$PDO->exec(self::$createGoal);
     }
 } 

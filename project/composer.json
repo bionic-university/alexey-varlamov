@@ -14,11 +14,10 @@
     },
     "autoload": {
         "psr-4": {
-            "Symfony\\": "vendor/symfony/console/Symfony",
-            "Psr\\": "src/Psr-4/"
+            "Vav\\": "src/Vav/"
         }
     },
     "scripts": {
-        "post-package-install": "\\Vav\\Core\\SQL\\Install::prepareFoundation"
+        "pre-install-cmd": "\\Vav\\Core\\SQL\\Install::prepareFoundation"
     }
 }

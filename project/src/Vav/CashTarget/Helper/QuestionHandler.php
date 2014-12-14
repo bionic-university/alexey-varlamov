@@ -92,7 +92,11 @@ class QuestionHandler
 
     public function askToChoose()
     {
-
+        return $this->questionHelper->ask(
+            $this->input,
+            $this->output,
+            new ChoiceQuestion($this->getMessage(), array())
+        );
     }
 
     private function getMessage()

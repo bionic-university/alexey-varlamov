@@ -20,7 +20,7 @@ abstract class Mapper
     {
         if (!isset(self::$PDO)) {
             self::$PDO = PdoConnector::getConnector();
-            self::$PDO->query('use ' . DB_NAME);
+            self::$PDO->query('USE ' . DB_NAME);
         }
         $this->initStatements();
     }
