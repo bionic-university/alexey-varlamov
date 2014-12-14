@@ -105,7 +105,7 @@ class GoalController
             $goals = $this->mapper->getCollection();
         }
 
-        if (is_null($goals)) {
+        if (is_null($goals) || $goals->count() === 0) {
             $this->block->setMessage(
                 'You do not define any targets yet. Please consider our help or create a new target.' . PHP_EOL .
                 $this->request->showHelp()
