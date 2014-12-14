@@ -35,7 +35,7 @@ class Install
           PRIMARY KEY (`id`),
           KEY `fk_user_id` (`user_id`),
           CONSTRAINT `fk_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8;
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
         /*!40101 SET character_set_client = @saved_cs_client */;
     ";
 
