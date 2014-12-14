@@ -99,15 +99,19 @@ class GoalController
 
         if ($id = $this->request->getParam('id')) {
             $goal = $this->mapper->load($id);
-            $goals = $goal->getCollection();
-            $goals->add($goal);
+            if (is_null($goal)) {
+                $type = 'empty';
+            } else {
+                $goals = $goal->getCollection();
+                $goals->add($goal);
+            }
         } elseif ($this->request->getParam('all')) {
             $goals = $this->mapper->getCollection();
         }
 
         if (is_null($goals) || $goals->count() === 0) {
             $this->block->setMessage(
-                'You do not define any targets yet. Please consider our help or create a new target.' . PHP_EOL .
+                'You have not define any targets yet. Please consider our help or create a new target.' . PHP_EOL .
                 $this->request->showHelp()
             );
             $type = 'empty';
