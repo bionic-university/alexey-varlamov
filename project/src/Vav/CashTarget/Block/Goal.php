@@ -118,6 +118,7 @@ class Goal
     public function getHeader()
     {
         $formatedString = $this->formatter->formatBlock($this->header, 'bg=green;fg=white;options=bold');
+
         return $formatedString;
     }
 
@@ -134,7 +135,9 @@ class Goal
      */
     public function getMessage()
     {
-        return $this->message;
+        $formatedString = $this->formatter->formatBlock($this->message, 'bg=blue;fg=white;options=bold');
+
+        return $formatedString;
     }
 
     /**
@@ -306,6 +309,11 @@ class Goal
     public function isShowTactic()
     {
         return $this->isShowTactic;
+    }
+
+    public function getTactics()
+    {
+
     }
 
     /**

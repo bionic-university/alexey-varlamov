@@ -234,6 +234,46 @@ class GoalController
         $this->block->setIsShowTactic(true);
         $this->block->setHeader(' ===  Cash Target Tactics === ');
         $this->block->renderView('tactic');
+
+        if (!$goal->getFsum() || $goal->getFsum() <= 0) {
+            $this->chooseTacticAction();
+        }
+        
+    }
+
+    public function chooseTacticAction()
+    {
+        if (!$this->request->getParam('id')) {
+            throw new \HttpInvalidParamException('The param "id" is required.');
+        }
+        $goal = $this->mapper->load($this->request->getParam('id'));
+
+        if (is_null($goal)) {
+            $msg = 'Target with id: ' . $this->request->getParam('id') . ' does not exists.';
+            throw new \BadMethodCallException($msg);
+        }
+
+        $goals = $goal->getCollection();
+        $goals->add($goal);
+        $this->block->setGoal($goals);
+        $this->block->setHeader(' ===  Cash Target Tactics === ');
+
+        $this->questionHandler->setQuestion(
+            'Hit "enter" if you want to choose tactic. Else press any button and hit "enter".'
+        );
+        $confirmation = $this->questionHandler->askToConfirm();
+        if ($confirmation) {
+            $this->questionHandler->setQuestion(
+                'Please enter tactic number and hit enter.'
+            );
+            $choices = ['Each day', 'Each month', 'Each year'];
+            $this->questionHandler->setChoices($choices);
+            $choice = $this->questionHandler->askToChoose();
+            if (in_array($choice, $choices)) {
+                $this->block->setMessage('Your choice was saved.');
+                $this->block->renderView('empty');
+            }
+        }
     }
 
     /**

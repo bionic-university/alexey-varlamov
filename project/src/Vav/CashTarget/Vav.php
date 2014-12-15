@@ -10,6 +10,6 @@ class Vav
 {
     public static function log($message)
     {
-        die($message);
+        die($message . PHP_EOL);
     }
 }
